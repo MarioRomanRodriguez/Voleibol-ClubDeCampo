@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Acta Liga Voley</title>
+<title>Delegación Voleibol Club de Campo</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#15202b">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Acta Liga">
+<meta name="apple-mobile-web-app-title" content="Delegación Voley">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -146,6 +146,8 @@ textarea{min-height:90px;resize:vertical}
 #toast.show{opacity:1}
 
 .logo{width:116px;height:116px;display:block;margin:6px auto 4px;border-radius:50%}
+.verwrap{position:relative;height:0}
+.ver{position:absolute;right:2px;top:2px;font-size:.78rem;font-weight:800;color:var(--muted);border:1.5px solid var(--line);border-radius:999px;padding:2px 10px;background:var(--card)}
 .homehead{text-align:center;margin:8px 0 14px}
 .homehead h1{margin:6px 0 2px}.homehead .sub{margin:0}
 .card.tight{padding:8px}
@@ -198,6 +200,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   // Dirección del servidor compartido (ver el archivo LEEME-SERVIDOR). Si la dejas vacía, cada móvil puede pegarla en Inicio.
   var SYNC_URL = 'https://script.google.com/macros/s/AKfycbwVZDC1yFQvhF6p0iUA4bZJ1L5n8LHUAxnz8ef4kljieAgmhbc2ip0-SXtAmI2yzKnCsA/exec';
   var CALENDAR = [{"n": 1, "d": "2026-10-18", "m": [["16:00", "Achicharraraitos", "Kaoticos"], ["16:00", "Yusihayas", "Los Cheques"], ["16:00", "Los Tiesos", "Clan Voley"], ["17:30", "Tequila", "Racatá"], ["17:30", "Elásticos 2.0", "Los Chulos"]]}, {"n": 2, "d": "2026-11-08", "m": [["16:00", "Racatá", "Yusihayas"], ["16:00", "Los Chulos", "Los Tiesos"], ["16:00", "Elásticos 2.0", "Tequila"], ["17:30", "Los Cheques", "Achicharraraitos"], ["17:30", "Clan Voley", "Kaoticos"]]}, {"n": 3, "d": "2026-11-15", "m": [["16:00", "Achicharraraitos", "Clan Voley"], ["16:00", "Los Cheques", "Racatá"], ["16:00", "Kaoticos", "Los Chulos"], ["17:30", "Yusihayas", "Elásticos 2.0"], ["17:30", "Los Tiesos", "Tequila"]]}, {"n": 4, "d": "2026-11-22", "m": [["16:00", "Elásticos 2.0", "Los Cheques"], ["16:00", "Tequila", "Kaoticos"], ["16:00", "Los Tiesos", "Yusihayas"], ["17:30", "Racatá", "Achicharraraitos"], ["17:30", "Los Chulos", "Clan Voley"]]}, {"n": 5, "d": "2026-11-29", "m": [["16:00", "Achicharraraitos", "Los Chulos"], ["16:00", "Racatá", "Elásticos 2.0"], ["16:00", "Clan Voley", "Tequila"], ["17:30", "Los Cheques", "Los Tiesos"], ["17:30", "Kaoticos", "Yusihayas"]]}, {"n": 6, "d": "2026-12-13", "m": [["16:00", "Elásticos 2.0", "Achicharraraitos"], ["16:00", "Los Tiesos", "Racatá"], ["16:00", "Kaoticos", "Los Cheques"], ["17:30", "Tequila", "Los Chulos"], ["17:30", "Yusihayas", "Clan Voley"]]}, {"n": 7, "d": "2027-01-10", "m": [["16:00", "Achicharraraitos", "Tequila"], ["16:00", "Los Chulos", "Yusihayas"], ["16:00", "Clan Voley", "Los Cheques"], ["17:30", "Elásticos 2.0", "Los Tiesos"], ["17:30", "Racatá", "Kaoticos"]]}, {"n": 8, "d": "2027-01-17", "m": [["16:00", "Yusihayas", "Tequila"], ["16:00", "Kaoticos", "Elásticos 2.0"], ["16:00", "Clan Voley", "Racatá"], ["17:30", "Los Tiesos", "Achicharraraitos"], ["17:30", "Los Cheques", "Los Chulos"]]}, {"n": 9, "d": "2027-01-31", "m": [["16:00", "Achicharraraitos", "Yusihayas"], ["16:00", "Los Tiesos", "Kaoticos"], ["16:00", "Los Chulos", "Racatá"], ["17:30", "Tequila", "Los Cheques"], ["17:30", "Elásticos 2.0", "Clan Voley"]]}, {"n": "R", "d": "2027-02-07", "m": []}];
+  var APP_VERSION = 'v10';
   var MAX_SUBS = 8;   // máximo de sustituciones por equipo y set
   var ROMAN = ['I','II','III','IV','V','VI'];
   var FRONT = [3,2,1], BACK = [4,5,0];
@@ -758,7 +761,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     return h + '</table></div>';
   }
   function viewHome(){
-    var h = '<div class="homehead"><img class="logo" src="' + LOGO + '" alt="Delegación de Vóley Club de Campo Sevilla"><h1>Acta de voleibol</h1><p class="sub">Liga 2026-2027</p></div>' +
+    var h = '<div class="verwrap"><span class="ver">' + APP_VERSION + '</span></div><div class="homehead"><img class="logo" src="' + LOGO + '" alt="Delegación de Vóley Club de Campo Sevilla"><h1>Delegación Voleibol Club de Campo</h1><p class="sub">Liga 2026-2027</p></div>' +
       '<h3 class="grp" style="margin-top:0">Clasificación</h3>' + standTableHTML() + syncLine();
     if (!G.ref){
       return h + '<button class="btn sec" data-a="standings">Ver resultados</button>' +

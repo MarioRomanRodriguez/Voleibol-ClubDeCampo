@@ -1,6 +1,6 @@
 {
-  "name": "Acta Liga Voley Club de Campo",
-  "short_name": "Acta Liga",
+  "name": "Delegación Voleibol Club de Campo",
+  "short_name": "Delegación Voley",
   "description": "Acta electrónica de voleibol: puntos, rotaciones, cambios, líbero, sanciones y PDF.",
   "lang": "es",
   "start_url": "./index.html",
