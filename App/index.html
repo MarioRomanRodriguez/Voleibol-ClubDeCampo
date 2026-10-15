@@ -174,6 +174,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
 .savebox.wait{border-color:var(--b);background:var(--b-soft)}
 .savebox p{margin:6px 0 10px;font-size:.88rem;color:var(--muted)}
 .savebox .btn{margin-top:10px}
+.welcome{text-align:center}.welcome .tick{width:84px;height:84px;border-radius:50%;background:#2e9e5b;color:#fff;font-size:3rem;font-weight:900;display:flex;align-items:center;justify-content:center;margin:6px auto 10px}
+.welcome h3{font-size:1.35rem}
 .lnk{border:0;background:none;color:var(--a);font:inherit;font-weight:700;cursor:pointer;padding:0 0 0 6px}
 </style>
 </head>
@@ -224,6 +226,13 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   }
   function load(){ try { var r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch(e){} return null; }
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+  var SNAPKEY = KEY + '-snap';
+  function snapSave(){ try { localStorage.setItem(SNAPKEY, JSON.stringify(S)); } catch(e){} }
+  function snapLoad(){
+    try { var r = localStorage.getItem(SNAPKEY); if (!r) return null; var o = JSON.parse(r);
+      if (o && o.setNo === S.setNo && o.names[0] === S.names[0] && o.names[1] === S.names[1] && o.setScores.length === S.setScores.length && o.phase === 'lineup') return o; } catch(e){}
+    return null;
+  }
   function loadG(){
     try { var r = localStorage.getItem(GKEY); if (r){ var g = JSON.parse(r); if (g && Array.isArray(g.results)) return {results:g.results, num:g.num || {}, email:g.email || '', remote:g.remote || [], remoteActas:g.remoteActas || [], actas:g.actas || {}, queue:g.queue || [], sent:g.sent || {}, okAt:g.okAt || {}, pin:g.pin || '', ref:!!g.ref, url:g.url || '', last:g.last || 0}; } } catch(e){}
     return {results:[], num:{}, email:'', remote:[], remoteActas:[], actas:{}, queue:[], sent:{}, okAt:{}, pin:'', ref:false, url:'', last:0};
@@ -545,6 +554,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       }
     }
     if (err){ ui.error = err; $('err').textContent = err; return; }
+    snapSave();   // foto del estado antes de empezar el set, para poder volver a las alineaciones
     push();
     if (!S.matchId){ S.matchId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6); S.dateISO = new Date().toISOString().slice(0, 10); }
     S.lineup = lu; S.start = [lu[0].slice(), lu[1].slice()];
@@ -621,6 +631,29 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     ev(t, 'sub', 'Cambio EXCEPCIONAL ' + S.names[t] + ' (no cuenta en los ' + MAX_SUBS + '): sale ' + label(t, c) + ', entra ' + label(t, p), {slot:slot, out:c, inn:p, exc:true});
     ui.modal = null; commit(); toast('Sustitución excepcional anotada');
   }
+  function doBackLU(){
+    var prev = snapLoad(); if (!prev){ toast('No se puede volver: no hay alineación guardada.'); ui.modal = null; render(); return; }
+    var cur = S;
+    S = prev; S.roster = cur.roster; S.draft = cur.draft; S.draftFor = cur.draftFor; S.inj = cur.inj || [[],[]]; S.notes = cur.notes;
+    S.phase = 'lineup'; hist = []; ui.luSel = null; ui.modal = null; ui.error = '';
+    closeTimeout(); commit(); window.scrollTo(0, 0);
+    toast('Has vuelto a las alineaciones del set ' + S.setNo);
+  }
+  function doAdd(){
+    var m = ui.modal, t = m.t, num = String(m.num || '').trim(), who = m.who || 'new', msg = $('merr');
+    if (!/^\d{1,2}$/.test(num)){ msg.textContent = 'Escribe un número de 1 o 2 cifras.'; return; }
+    num = String(parseInt(num, 10));
+    if (S.roster[t].some(function(p){ return p.n === num; })){ msg.textContent = 'Ya hay un jugador con el ' + num + ' en ' + S.names[t] + '.'; return; }
+    var name = '', dp = null;
+    if (who === 'new'){ name = String(m.name || '').trim(); if (!name) name = 'Jugador ' + num; }
+    else { dp = S.draft[t][parseInt(who, 10)]; if (!dp){ msg.textContent = 'Elige a quién añadir.'; return; } name = dp.name; }
+    S.roster[t].push({n:num, name:name, cap:false, lib:false});
+    S.roster[t].sort(function(x, y){ return (+x.n) - (+y.n); });
+    if (dp){ dp.n = num; var mem = G.num[S.names[t]] = G.num[S.names[t]] || {}; if (!dp.extra) mem[dp.name] = {n:num, cap:!!dp.cap, lib:!!dp.lib}; saveG(); }
+    else S.draft[t].push({name:name, n:num, cap:false, lib:false, extra:true});
+    ev(t, 'info', 'Se añade al acta: ' + S.names[t] + ' #' + num + ' ' + name);
+    ui.modal = null; commit(); toast('Añadido al acta: #' + num + ' ' + name);
+  }
   function doLibIn(num){
     var m = ui.modal, t = m.t, i = m.i;
     if (S.lib[t]) return;
@@ -688,6 +721,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         if (p.lib) libs++; else players++;
       }
       if (libs > 2) return S.names[t] + ' tiene más de 2 líberos.';
+      if (!rows.some(function(p){ return p.cap && !p.lib; })) return 'Elige el capitán de ' + S.names[t] + ' (botón C en un jugador con número que no sea líbero).';
       if (players < 6) return S.names[t] + ' necesita al menos 6 jugadores con número (sin contar líberos).';
       out[t] = rows.map(function(p){ return {n:p.n, name:p.name || ('Jugador ' + p.n), cap:!!p.cap, lib:!!p.lib}; });
       out[t].sort(function(x, y){ return (+x.n) - (+y.n); });
@@ -805,8 +839,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       });
       h += '</ul>';
     }
-    h += (G.ref ? '<button class="btn sec" data-a="np" style="margin-top:10px">Registrar no presentado</button>' : '') + '</div>' + (G.ref ? '<div class="card"><h2>Juntar resultados de varios móviles</h2><p class="hint" style="margin-top:0">Pega aquí un código de resultado recibido por correo para sumarlo a la clasificación.</p>' +
-      '<button class="btn sec" data-a="import">Importar resultados</button><button class="btn sec" data-a="copyall">Copiar todos mis resultados</button></div>' : '') +
+    h += (G.ref ? '<button class="btn sec" data-a="np" style="margin-top:10px">Registrar no presentado</button>' : '') + '</div>' + '' +
       '<button class="btn" data-a="closeStand">Volver</button>';
     return h;
   }
@@ -841,10 +874,14 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       '<button class="btn sec" data-a="toHome">Inicio</button>';
   }
 
+  function capStatus(t){
+    var c = S.draft[t].filter(function(p){ return p.cap && !p.lib && p.n !== ''; })[0];
+    return c ? '<p class="legend2" style="color:#1f7a45;font-weight:700">✓ Capitán: ' + esc(c.n) + ' ' + esc(c.name || '') + '</p>' : '<p class="legend2" style="color:var(--red);font-weight:700">Falta elegir el capitán (botón C)</p>';
+  }
   function viewRoster(){
     var h = '<h1>Jugadores</h1><p class="sub">Escribe el número de camiseta de quien juega hoy. Sin número, no juega. Los números se recuerdan para el próximo partido.</p>';
     for (var t = 0; t < 2; t++){
-      h += '<div class="card tc t' + t + '"><div class="thd">' + esc(S.names[t]) + '</div><p class="legend2">C = capitán · L = líbero (máximo 2)</p>';
+      h += '<div class="card tc t' + t + '"><div class="thd">' + esc(S.names[t]) + '</div><p class="legend2">C = capitán (obligatorio) · L = líbero (máximo 2)</p>' + capStatus(t);
       S.draft[t].forEach(function(p, i){
         h += '<div class="rrow">' +
           '<input class="txt rn" data-r="n" data-t="' + t + '" data-i="' + i + '" inputmode="numeric" maxlength="2" value="' + esc(p.n) + '" placeholder="Nº" aria-label="Número de ' + esc(p.name || 'jugador') + '">' +
@@ -863,7 +900,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
 
   function getStart(t, i){ return S.start && S.start[t] && S.start[t][i] ? S.start[t][i] : ''; }
   function luAutoNext(t, i){
-    var all = FRONT.concat(BACK), ci = all.indexOf(i);
+    var all = [0,1,2,3,4,5], ci = all.indexOf(i);
     for (var k = 1; k <= 6; k++){ var ni = all[(ci + k) % 6]; if (!getStart(t, ni)) return {t:t, i:ni}; }
     var ot = 1 - t;
     for (var k2 = 0; k2 < 6; k2++){ var ni2 = all[k2]; if (!getStart(ot, ni2)) return {t:ot, i:ni2}; }
@@ -891,7 +928,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function syncLineup(){ /* no-op: S.start[] se actualiza al momento */ }
   function viewLineup(){
     var o = order(), deciding = S.setNo === S.bestOf;
-    if (!ui.luSel){ ui.luSel = {t:o[0], i:FRONT[0]}; }
+    if (!ui.luSel){ ui.luSel = {t:o[0], i:0}; }
     var h = '<h1>Set ' + S.setNo + ': alineaciones</h1><p class="sub">' + (deciding ? 'Set decisivo. ' : '') + 'Toca una posición y después el jugador. Solo un toque por jugador.</p>';
     h += '<div class="card"><label class="f">Saca primero</label><div class="seg">' +
       '<button data-a="first" data-v="0" class="ta' + (S.first === 0 ? ' on' : '') + '">' + esc(S.names[0]) + '</button>' +
@@ -961,7 +998,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       '<button class="btn sec" data-a="undo"' + (hist.length ? '' : ' disabled') + '>Deshacer</button>' +
       '<button class="btn sec" data-a="sanc"' + (S.phase === 'play' ? '' : ' disabled') + '>Sanción</button>' +
       '<button class="btn sec" data-a="swap"' + (S.phase === 'play' ? '' : ' disabled') + '>Lados</button>' +
-      '<button class="btn sec" data-a="log">Registro</button><button class="btn sec" data-a="pdf">PDF</button></div></nav>';
+      '<button class="btn sec" data-a="log">Registro</button><button class="btn sec" data-a="more">Más</button></div></nav>';
   }
 
   function setsTable(){
@@ -1054,6 +1091,27 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       '<button class="btn" data-a="applySanc">Anotar sanción</button><button class="btn sec" data-a="closeModal">Cancelar</button>';
     return h;
   }
+  function moreModal(){
+    var can = S.phase === 'play' && !!snapLoad();
+    return '<h3>Más opciones</h3>' +
+      '<button class="btn" data-a="addOpen">Añadir jugador al acta</button>' +
+      '<button class="btn sec" data-a="backLUAsk"' + (can ? '' : ' disabled') + '>Volver a las alineaciones</button>' +
+      '<button class="btn sec" data-a="pdfMore">Descargar PDF</button>' +
+      (can ? '' : '<p class="hint">«Volver a las alineaciones» solo está disponible mientras se juega un set.</p>') +
+      '<button class="btn sec" data-a="closeModal">Cerrar</button>';
+  }
+  function addModal(){
+    var m = ui.modal, t = m.t, free = [];
+    S.draft[t].forEach(function(p, i){ if (!p.extra && p.n === '') free.push({i:i, name:p.name}); });
+    var h = '<h3>Añadir jugador al acta</h3><p class="sub0">Puedes hacerlo en cualquier momento del partido. Entra en el banquillo y podrá jugar con un cambio normal.</p>' +
+      '<div class="seg"><button data-a="addTeam" data-t="0" class="ta' + (t === 0 ? ' on' : '') + '">' + esc(S.names[0]) + '</button><button data-a="addTeam" data-t="1" class="tb' + (t === 1 ? ' on' : '') + '">' + esc(S.names[1]) + '</button></div>' +
+      '<label class="f" for="addWho">Jugador</label><select id="addWho" data-add-sel="who"><option value="new"' + ((m.who || 'new') === 'new' ? ' selected' : '') + '>Nuevo participante (escribir nombre)</option>' +
+      free.map(function(f){ return '<option value="' + f.i + '"' + (String(m.who) === String(f.i) ? ' selected' : '') + '>' + esc(f.name) + ' (de la plantilla, sin número)</option>'; }).join('') + '</select>';
+    if ((m.who || 'new') === 'new') h += '<label class="f" for="addName">Nombre</label><input class="txt" id="addName" data-add="name" value="' + esc(m.name || '') + '" placeholder="Nombre y apellido">';
+    h += '<label class="f" for="addNum">Número de camiseta</label><input class="txt" id="addNum" data-add="num" inputmode="numeric" maxlength="2" value="' + esc(m.num || '') + '" placeholder="Nº">' +
+      '<div class="err" id="merr" role="alert"></div><button class="btn" data-a="addDo">Añadir al acta</button><button class="btn sec" data-a="closeModal">Cancelar</button>';
+    return h;
+  }
   function logModal(){
     var h = '<h3>Registro del partido</h3><p class="sub0">' + esc(S.names[0]) + ' ' + S.setsWon[0] + ' – ' + S.setsWon[1] + ' ' + esc(S.names[1]) + '</p>';
     if (S.setScores.length) h += setsTable();
@@ -1100,6 +1158,11 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     if (m.type === 'cell') body = cellModal();
     else if (m.type === 'sanc') body = sancModal();
     else if (m.type === 'log') body = logModal();
+    else if (m.type === 'more') body = moreModal();
+    else if (m.type === 'add') body = addModal();
+    else if (m.type === 'backLU') body = '<h3>¿Volver a las alineaciones?</h3><p class="sub0">Se borra todo lo anotado en el set ' + S.setNo + ' (puntos, cambios, tiempos muertos y sanciones) y vuelves a poner las alineaciones. Los sets anteriores se conservan.</p>' +
+      '<button class="btn warn" data-a="backLUDo">Sí, volver a las alineaciones</button><button class="btn sec" data-a="closeModal">No, seguir con el set</button>';
+    else if (m.type === 'welcome') body = '<div class="welcome"><div class="tick">✓</div><h3>Sesión de árbitro iniciada</h3><p class="sub0">La clave es correcta. Ya puedes arbitrar partidos y consultar el historial.</p><button class="btn" data-a="closeModal">Seguir</button></div>';
     else if (m.type === 'import') body = importModal();
     else if (m.type === 'copy') body = copyModal();
     else if (m.type === 'delres') body = delresModal();
@@ -1518,7 +1581,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         if (!lp){ ui.loginErr = 'Escribe la clave.'; render(); break; }
         ui.loginErr = 'Comprobando…'; $('loginErr').textContent = ui.loginErr;
         checkPin(lp).then(function(r){
-          if (r === 'ok'){ G.pin = lp; G.ref = true; G.pinBad = false; ui.loginErr = ''; saveG(); flush(); render(); window.scrollTo(0, 0); toast('Sesión de árbitro iniciada ✓', 3500); }
+          if (r === 'ok'){ G.pin = lp; G.ref = true; G.pinBad = false; ui.loginErr = ''; saveG(); flush(); render(); window.scrollTo(0, 0); ui.modal = {type:'welcome'}; render(); }
           else { ui.loginErr = r === 'bad' ? 'Clave incorrecta.' : 'No hay conexión con el servidor. Inténtalo de nuevo.'; render(); toast(ui.loginErr, 4000); }
         });
         break;
@@ -1611,6 +1674,13 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       case 'startSet': startSet(); break;
       case 'cell': ui.modal = {type:'cell', t:t, i:i}; render(); break;
       case 'enter': doEnter(b.getAttribute('data-p')); break;
+      case 'more': ui.modal = {type:'more'}; render(); break;
+      case 'pdfMore': ui.modal = null; render(); exportPDF(); break;
+      case 'addOpen': ui.modal = {type:'add', t:0, who:'new', name:'', num:''}; render(); break;
+      case 'addTeam': ui.modal.t = t; ui.modal.who = 'new'; render(); break;
+      case 'addDo': doAdd(); break;
+      case 'backLUAsk': ui.modal = {type:'backLU'}; render(); break;
+      case 'backLUDo': doBackLU(); break;
       case 'excOpen': ui.modal.exc = true; render(); break;
       case 'excEnter': doExc(b.getAttribute('data-p')); break;
       case 'libin': doLibIn(b.getAttribute('data-p')); break;
@@ -1659,6 +1729,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     }
   });
   document.addEventListener('change', function(e){
+    var sel = e.target.closest && e.target.closest('[data-add-sel]');
+    if (sel && ui.modal && ui.modal.type === 'add'){ ui.modal.who = sel.value; render(); return; }
     var np = e.target.closest('[data-np]');
     if (np && ui.modal){ ui.modal[np.getAttribute('data-np')] = np.value; return; }
     var el = e.target.closest('[data-m]'); if (!el || !ui.modal) return;
@@ -1668,6 +1740,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   document.addEventListener('input', function(e){
     var el = e.target; if (!el.matches) return;
     if (el.matches('[data-note]')){ S.notes = el.value; save(); }
+    if (el.matches('[data-add]') && ui.modal && ui.modal.type === 'add'){ ui.modal[el.getAttribute('data-add')] = el.value; }
     if (el.matches('[data-cfg="email"]')){ G.email = el.value.trim(); saveG(); }
     if (el.matches('[data-cfg="url"]')){ G.url = el.value.trim(); saveG(); clearTimeout(window.__urlT); window.__urlT = setTimeout(function(){ pull(); flush(); }, 1200); }
     if (el.matches('[data-note]') && S.phase === 'done' && S.matchId){ clearTimeout(window.__noteT); window.__noteT = setTimeout(function(){ syncResult(); }, 2500); }
