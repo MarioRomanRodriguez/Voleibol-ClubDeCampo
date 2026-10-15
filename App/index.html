@@ -166,6 +166,9 @@ textarea{min-height:90px;resize:vertical}
 .res button.go{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
 .res .hr{font-weight:800;min-width:46px;color:var(--muted);font-size:.85rem}
 h3.grp{margin:16px 4px 8px;font-size:1rem}
+.btn.upd{background:var(--a);color:#fff;font-size:1.05rem;padding:16px 12px;margin:6px 0 14px;box-shadow:0 3px 0 rgba(0,0,0,.18);letter-spacing:.2px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.upd{color:#04202e}}
+:root[data-theme="dark"] .btn.upd{color:#04202e}
 .lnk{border:0;background:none;color:var(--a);font:inherit;font-weight:700;cursor:pointer;padding:0 0 0 6px}
 </style>
 </head>
@@ -199,7 +202,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
 
   function fresh(){
     return {
-      phase:'home', names:['',''], bestOf:3,
+      phase:'home', names:['',''], bestOf:5, inj:[[],[]], sched:false,
       info:{comp:'Liga Club de Campo Sevilla 2026-2027', lugar:'Club de Campo Sevilla', juego:'', cat:'', div:'X', ar1:'', ar2:'', an:'', fecha:new Date().toLocaleDateString('es-ES')},
       roster:[[],[]], draft:[[],[]], draftFor:['',''], matchId:'', dateISO:'',
       setNo:1, setsWon:[0,0], setScores:[], score:[0,0], serving:0, first:0, swap:false, cc:false,
@@ -217,8 +220,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function load(){ try { var r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch(e){} return null; }
   function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
   function loadG(){
-    try { var r = localStorage.getItem(GKEY); if (r){ var g = JSON.parse(r); if (g && Array.isArray(g.results)) return {results:g.results, num:g.num || {}, email:g.email || '', remote:g.remote || [], remoteActas:g.remoteActas || [], actas:g.actas || {}, queue:g.queue || [], sent:g.sent || {}, pin:g.pin || '', ref:!!g.ref, url:g.url || '', last:g.last || 0}; } } catch(e){}
-    return {results:[], num:{}, email:'', remote:[], remoteActas:[], actas:{}, queue:[], sent:{}, pin:'', ref:false, url:'', last:0};
+    try { var r = localStorage.getItem(GKEY); if (r){ var g = JSON.parse(r); if (g && Array.isArray(g.results)) return {results:g.results, num:g.num || {}, email:g.email || '', remote:g.remote || [], remoteActas:g.remoteActas || [], actas:g.actas || {}, queue:g.queue || [], sent:g.sent || {}, okAt:g.okAt || {}, pin:g.pin || '', ref:!!g.ref, url:g.url || '', last:g.last || 0}; } } catch(e){}
+    return {results:[], num:{}, email:'', remote:[], remoteActas:[], actas:{}, queue:[], sent:{}, okAt:{}, pin:'', ref:false, url:'', last:0};
   }
   function saveG(){ try { localStorage.setItem(GKEY, JSON.stringify(G)); } catch(e){} }
   S = load() || fresh();
@@ -233,7 +236,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function push(){ hist.push(JSON.stringify(S)); if (hist.length > 300) hist.shift(); }
   function commit(){ syncResult(); save(); render(); }
   function hhmm(){ var d = new Date(); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
-  function toast(msg){ var el = $('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function(){ el.classList.remove('show'); }, 3200); }
+  function toast(msg, ms){ var el = $('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function(){ el.classList.remove('show'); }, ms || 3200); }
   function pname(t, n){ var r = S.roster[t].filter(function(p){ return p.n === n; })[0]; return r ? r.name : ''; }
   function label(t, n){ var nm = pname(t, n); return '#' + n + (nm ? ' ' + nm : ''); }
   function ev(t, k, x, dd){ S.events.push({s:S.setNo, a:S.score[0], b:S.score[1], t:t, k:k, x:x, d:dd || null}); }
@@ -359,49 +362,60 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     G.remote = (G.remote || []).filter(function(x){ return x.id !== id; });
     if (syncBase()) enqueue({op:'del', id:id});
   }
-  var flushing = false, pulling = false;
+  var flushing = false, flushT = 0, pullP = null;
+  function tmo(ms){ try { var c = new AbortController(); setTimeout(function(){ c.abort(); }, ms); return c.signal; } catch(e){ return undefined; } }
   async function flush(){
     var url = syncBase();
-    if (!url || !G.pin || flushing || !G.queue.length) return;
-    flushing = true;
+    if (!url || !G.pin || !G.queue.length) return;
+    if (flushing && Date.now() - flushT < 40000) return;
+    flushing = true; flushT = Date.now();
+    var sent = 0;
     try {
       while (G.queue.length){
         var q = G.queue[0], body = {key:G.pin, op:q.op, id:q.id};
         if (q.op === 'put'){ body.result = q.result; body.acta = G.actas[q.id] ? JSON.stringify(G.actas[q.id]) : ''; }
-        var res = await fetch(url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(body)});
+        var res = await fetch(url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(body), signal:tmo(30000)});
         var j = await res.json();
-        if (j && j.error === 'pin'){ G.pinBad = true; toast('La clave de árbitro no es correcta.'); break; }
-        if (!j || !j.ok) break;
-        G.pinBad = false; G.queue.shift(); saveG();
+        if (j && j.error === 'pin'){ G.pinBad = true; G.lastErr = 'la clave no coincide con la del servidor'; break; }
+        if (!j || !j.ok){ G.lastErr = 'el servidor respondió: ' + ((j && j.error) || 'sin datos'); break; }
+        G.pinBad = false; G.lastErr = ''; G.okAt[q.id] = Date.now();
+        G.queue = G.queue.filter(function(x){ return x !== q; }); sent++; saveG();
       }
-    } catch(e){}
-    flushing = false;
+    } catch(e){ G.lastErr = 'sin conexión con el servidor'; }
+    flushing = false; saveG();
+    if (sent && !G.queue.length) toast('Resultado y acta guardados en el historial ✓', 4500);
     if (!G.queue.length) pull(); else softRender();
   }
-  async function pull(){
-    var url = syncBase();
-    if (!url || pulling) return;
-    pulling = true;
+  function pull(manual){
+    if (pullP) return pullP;
+    pullP = doPull().then(function(r){ pullP = null; return r; });
+    return pullP;
+  }
+  async function doPull(){
+    var url = syncBase(), ok = false;
+    if (!url) return false;
+    var started = Date.now(), before = JSON.stringify(G.remote || []), hadData = !!G.last;
     try {
-      var res = await fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + 't=' + Date.now());
+      var res = await fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + 't=' + Date.now(), {signal:tmo(20000)});
       var j = await res.json();
       if (j && Array.isArray(j.results)){
         var rem = [], ids = {};
         j.results.forEach(function(x){ var c = cleanResult(x); if (c){ rem.push(c); ids[c.id] = 1; } });
-        G.remote = rem; G.remoteActas = Array.isArray(j.actas) ? j.actas.filter(function(x){ return typeof x === 'string'; }) : []; G.last = Date.now(); G.syncErr = false;
+        G.remote = rem; G.remoteActas = Array.isArray(j.actas) ? j.actas.filter(function(x){ return typeof x === 'string'; }) : []; G.last = Date.now(); G.syncErr = false; ok = true;
         if (!G.queue.length){
           G.results = G.results.filter(function(r){
             if (ids[r.id]) return true;
-            if (G.sent[r.id]) return false;                 // ya se subió y alguien lo borró
-            if (G.pin){ uploadResult(r, false); }           // resultado antiguo de este móvil: se sube
+            if (G.sent[r.id]) return !(G.okAt[r.id] && G.okAt[r.id] < started);   // si se subió antes de esta consulta y ya no está, alguien lo borró
+            if (G.pin){ uploadResult(r, false); }                                    // resultado antiguo de este móvil: se sube
             return true;
           });
         }
         saveG();
+        if (hadData && JSON.stringify(rem) !== before) toast('Clasificación actualizada ✓');
       }
     } catch(e){ G.syncErr = true; }
-    pulling = false;
     softRender();
+    return ok;
   }
   function softRender(){
     if (ui.modal) return;
@@ -423,7 +437,9 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     if (!syncBase()) return '';
     var t = G.last ? (G.syncErr ? 'Sin conexión. Datos de las ' : 'Actualizado a las ') + hhmmOf(G.last) : (G.syncErr ? 'Sin conexión todavía.' : 'Cargando…');
     if (G.queue.length) t += ' · ' + G.queue.length + (G.queue.length === 1 ? ' resultado pendiente de subir' : ' resultados pendientes de subir') + (G.pin ? '' : ' (falta la clave de árbitro)');
-    return '<p class="sync">' + esc(t) + ' <button class="lnk" data-a="refresh">Actualizar</button></p>';
+    var h = '<p class="sync">' + esc(t) + '</p>';
+    if (G.queue.length && G.lastErr) h += '<p class="sync" style="color:var(--red)">No se pudo subir: ' + esc(G.lastErr) + '.</p>';
+    return h + '<button class="btn upd" data-a="refresh"' + (ui.busy ? ' disabled' : '') + '>' + (ui.busy ? 'Actualizando…' : '↻ Actualizar clasificación') + '</button>';
   }
   async function shareActa(id){
     var st = G.actas[id];
@@ -456,7 +472,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     var J = calJ(n), m = J.m[k];
     newMatch();
     S.names = [m[1], m[2]]; S.info.cat = String(n); S.info.juego = String((n - 1) * 5 + k + 1);
-    S.info.fecha = fmtDate(J.d); S.matchId = 'j' + n + '-' + (k + 1); S.dateISO = J.d;
+    S.info.fecha = fmtDate(J.d); S.matchId = 'j' + n + '-' + (k + 1); S.dateISO = J.d; S.bestOf = 5; S.sched = true;
     buildDraft(0); buildDraft(1);
     S.phase = 'roster'; ui.view = null; ui.jor = null; ui.error = ''; ui.luSel = null; ui.modal = null;
     commit(); window.scrollTo(0, 0);
@@ -486,6 +502,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function point(t){
     if (S.phase !== 'play') return;
     push(); scorePoint(t); commit();
+    if (S.phase === 'done') toast('Partido terminado: ' + S.names[0] + ' ' + S.setsWon[0] + ' - ' + S.setsWon[1] + ' ' + S.names[1], 5500);
     var el = document.querySelector('.team.t' + t + ' .tscore');
     if (el) el.classList.add('bump');
   }
@@ -493,6 +510,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function nextSet(){
     push();
     S.setNo++; S.score = [0,0]; S.tm = [2,2]; S.subs = [0,0]; S.lib = [null,null]; S.out = [[],[]];
+    if (S.inj) for (var qt = 0; qt < 2; qt++) S.start[qt] = (S.start[qt] || []).map(function(n){ return S.inj[qt].indexOf(n) > -1 ? '' : n; });   // el lesionado no puede volver a alinearse
     S.first = 1 - S.first; S.swap = !S.swap; S.cc = false; S.notice = '';
     ev(null, 'cc', 'Cambio de campo entre sets');
     S.phase = 'lineup'; ui.error = ''; ui.luSel = null;
@@ -514,6 +532,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         if (!v){ err = 'Faltan jugadores en la alineación de ' + S.names[t] + '.'; break; }
         if (seen[v]){ err = 'Jugador repetido en ' + S.names[t] + ': ' + v + '.'; break; }
         if (S.dq[t].indexOf(v) > -1){ err = 'El ' + v + ' de ' + S.names[t] + ' está descalificado.'; break; }
+        if (S.inj && S.inj[t].indexOf(v) > -1){ err = 'El ' + v + ' de ' + S.names[t] + ' fue sustituido por lesión y no puede volver a jugar.'; break; }
         seen[v] = 1; lu[t].push(v);
       }
     }
@@ -555,22 +574,44 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       if (p.lib || on[p.n] || !st) return false;
       if (S.out[t].indexOf(p.n) > -1 || S.dq[t].indexOf(p.n) > -1) return false;
       if (st.st === 'start') return !S.pl[t][p.n];
-      if (st.st === 'sub') return p.n === st.p && S.pl[t][p.n] && S.pl[t][p.n].st === 'out';
+      if (st.st === 'sub') return p.n === st.p && S.pl[t][p.n] && S.pl[t][p.n].st === 'out' && !(st.at != null && S.pts.length <= st.at);
       return false;
     });
   }
   function doEnter(p){
     var m = ui.modal, t = m.t, i = m.i, c = S.lineup[t][i];
     if (S.subs[t] >= MAX_SUBS) return;
+    if (!benchFor(t, c).some(function(x){ return x.n === p; })) return;
     push();
     var st = S.pl[t][c];
-    if (st.st === 'start'){ S.pl[t][c] = {st:'out', p:p}; S.pl[t][p] = {st:'sub', p:c}; }
+    if (st.st === 'start'){ S.pl[t][c] = {st:'out', p:p}; S.pl[t][p] = {st:'sub', p:c, at:S.pts.length}; }
     else { S.pl[t][c] = {st:'closed'}; S.pl[t][p] = {st:'closed'}; }
     var slot = S.slots[t].indexOf(c);
     if (slot > -1) S.slots[t][slot] = p;
     S.lineup[t][i] = p; S.subs[t]++;
     ev(t, 'sub', 'Cambio ' + S.names[t] + ' (' + S.subs[t] + '): sale ' + label(t, c) + ', entra ' + label(t, p), {slot:slot, out:c, inn:p});
     ui.modal = null; commit();
+  }
+  function excCandidates(t){
+    var on = {}; S.lineup[t].forEach(function(n){ on[n] = 1; });
+    if (S.lib[t]) on[S.lib[t].rep] = 1;
+    var inj = (S.inj && S.inj[t]) || [];
+    return S.roster[t].filter(function(p){
+      return !p.lib && !on[p.n] && S.out[t].indexOf(p.n) === -1 && S.dq[t].indexOf(p.n) === -1 && inj.indexOf(p.n) === -1;
+    });
+  }
+  function doExc(p){
+    var m = ui.modal, t = m.t, i = m.i, c = S.lineup[t][i];
+    if (!excCandidates(t).some(function(x){ return x.n === p; })) return;
+    push();
+    if (!S.inj) S.inj = [[],[]];
+    S.inj[t].push(c);
+    S.pl[t][c] = {st:'closed'}; S.pl[t][p] = {st:'closed'};
+    var slot = S.slots[t].indexOf(c);
+    if (slot > -1) S.slots[t][slot] = p;
+    S.lineup[t][i] = p;
+    ev(t, 'sub', 'Cambio EXCEPCIONAL ' + S.names[t] + ' (no cuenta en los ' + MAX_SUBS + '): sale ' + label(t, c) + ', entra ' + label(t, p), {slot:slot, out:c, inn:p, exc:true});
+    ui.modal = null; commit(); toast('Sustitución excepcional anotada');
   }
   function doLibIn(num){
     var m = ui.modal, t = m.t, i = m.i;
@@ -808,7 +849,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     }
     h += '<div class="err" id="err" role="alert">' + esc(ui.error) + '</div>' +
       '<button class="btn" data-a="toLineup">Siguiente: alineaciones</button>' +
-      '<button class="btn sec" data-a="toSetup">Atrás</button>';
+      '<button class="btn sec" data-a="toSetup">' + (S.sched && !S.setStarts.length ? 'Atrás (elegir otro partido)' : 'Atrás') + '</button>';
     return h;
   }
 
@@ -831,7 +872,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     var s = ui.luSel; if (!s) return '';
     var t = s.t, assigned = {};
     if (S.start[t]) S.start[t].forEach(function(n){ if (n) assigned[n] = 1; });
-    var players = S.roster[t].filter(function(p){ return !p.lib; });
+    var players = S.roster[t].filter(function(p){ return !p.lib && !(S.inj && S.inj[t].indexOf(p.n) > -1); });
     var h = '<p style="margin:0 0 8px;font-size:.88rem;color:var(--muted)">Elige jugador para posición <b>' + ROMAN[s.i] + '</b> de ' + esc(S.names[t]) + ':</p><div class="pick">';
     players.forEach(function(p){
       var here = getStart(t, s.i) === p.n, used = assigned[p.n] && !here;
@@ -945,7 +986,17 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     } else {
       h += '<div class="sec-t">Cambio de jugador (' + S.subs[t] + '/' + MAX_SUBS + ')</div>';
       var c = benchFor(t, num);
-      if (S.subs[t] >= MAX_SUBS) h += '<p class="hint">Ya se hicieron los ' + MAX_SUBS + ' cambios de este set.</p>';
+      var stc = S.pl[t][num], blockedBack = stc && stc.st === 'sub' && stc.at != null && S.pts.length <= stc.at;
+      if (S.subs[t] >= MAX_SUBS){
+        h += '<p class="hint">Ya se hicieron los ' + MAX_SUBS + ' cambios de este set.</p>';
+        if (!m.exc) h += '<button class="btn warn" data-a="excOpen">Sustitución excepcional (lesión)</button>';
+        else {
+          var ex = excCandidates(t);
+          h += '<p class="hint">Entra cualquier jugador que no esté en pista (menos líberos). No cuenta en los ' + MAX_SUBS + ' y el jugador que sale ya no podrá volver a jugar el partido.</p>';
+          h += ex.length ? '<div class="pick">' + ex.map(function(p){ return '<button class="pickb" data-a="excEnter" data-p="' + esc(p.n) + '"><b>' + esc(p.n) + '</b><em>' + esc(p.name || 'Sin nombre') + '</em></button>'; }).join('') + '</div>' : '<p class="hint">No hay jugadores disponibles.</p>';
+        }
+      }
+      else if (!c.length && blockedBack) h += '<p class="hint">Para deshacer este cambio (que vuelva el jugador que salió) tiene que haber al menos un punto después del cambio.</p>';
       else if (!c.length) h += '<p class="hint">No hay jugadores que puedan entrar en este puesto.</p>';
       else h += '<div class="pick">' + c.map(function(p){ return '<button class="pickb" data-a="enter" data-p="' + esc(p.n) + '"><b>' + esc(p.n) + '</b><em>' + esc(p.name || 'Sin nombre') + '</em></button>'; }).join('') + '</div>';
       h += '<div class="sec-t">Líbero</div>';
@@ -1431,13 +1482,23 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         if (!lp){ ui.loginErr = 'Escribe la clave.'; render(); break; }
         ui.loginErr = 'Comprobando…'; $('loginErr').textContent = ui.loginErr;
         checkPin(lp).then(function(r){
-          if (r === 'ok'){ G.pin = lp; G.ref = true; G.pinBad = false; ui.loginErr = ''; saveG(); flush(); render(); window.scrollTo(0, 0); }
-          else { ui.loginErr = r === 'bad' ? 'Clave incorrecta.' : 'No hay conexión con el servidor. Inténtalo de nuevo.'; render(); }
+          if (r === 'ok'){ G.pin = lp; G.ref = true; G.pinBad = false; ui.loginErr = ''; saveG(); flush(); render(); window.scrollTo(0, 0); toast('Sesión de árbitro iniciada ✓', 3500); }
+          else { ui.loginErr = r === 'bad' ? 'Clave incorrecta.' : 'No hay conexión con el servidor. Inténtalo de nuevo.'; render(); toast(ui.loginErr, 4000); }
         });
         break;
       }
-      case 'logout': G.ref = false; G.pin = ''; ui.view = null; ui.jor = null; saveG(); render(); window.scrollTo(0, 0); break;
-      case 'refresh': toast('Actualizando…'); flush(); pull(); break;
+      case 'logout': toast('Has salido del modo árbitro'); G.ref = false; G.pin = ''; ui.view = null; ui.jor = null; saveG(); render(); window.scrollTo(0, 0); break;
+      case 'refresh': {
+        if (ui.busy) break;
+        ui.busy = true; render();
+        (async function(){
+          await flush(); var okp = await pull(true); ui.busy = false; render();
+          if (G.queue.length) toast('No se pudo subir el resultado: ' + (G.lastErr || 'pendiente') + '.', 6000);
+          else if (!okp) toast('Sin conexión: no se pudo actualizar.', 4500);
+          else toast('Clasificación actualizada ✓', 3500);
+        })();
+        break;
+      }
       case 'actapdf': shareActa(b.getAttribute('data-id')); break;
       case 'playMatch': {
         var pj = parseInt(b.getAttribute('data-v'), 10), pk = parseInt(b.getAttribute('data-k'), 10);
@@ -1464,7 +1525,16 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         for (var q = 0; q < 2; q++) if (S.draftFor[q] !== S.names[q] || !S.draft[q].length) buildDraft(q);
         S.phase = 'roster'; ui.error = ''; commit(); window.scrollTo(0, 0); break;
       }
-      case 'toSetup': syncRoster(); S.phase = 'setup'; ui.error = ''; commit(); window.scrollTo(0, 0); break;
+      case 'toSetup': {
+        syncRoster();
+        if (S.setStarts.length){ S.phase = 'lineup'; ui.error = ''; ui.luSel = null; commit(); window.scrollTo(0, 0); break; }   // partido ya empezado: vuelve a las alineaciones
+        if (S.sched){                                                                                                           // partido del calendario: vuelve a la jornada
+          var nj = parseInt(S.info.cat, 10), bo0 = S.bestOf;
+          newMatch(); S.phase = 'home'; S.bestOf = bo0; hist = [];
+          ui.view = 'matches'; ui.jor = isNaN(nj) ? null : nj; ui.error = ''; ui.luSel = null; commit(); window.scrollTo(0, 0); break;
+        }
+        S.phase = 'setup'; ui.error = ''; commit(); window.scrollTo(0, 0); break;
+      }
       case 'radd': syncRoster(); if (S.draft[t].length < 24) S.draft[t].push({name:'', n:'', cap:false, lib:false, extra:true}); commit(); break;
       case 'rdel': syncRoster(); S.draft[t].splice(i, 1); commit(); break;
       case 'rcap': syncRoster(); var was = S.draft[t][i].cap; S.draft[t].forEach(function(p){ p.cap = false; }); S.draft[t][i].cap = !was; commit(); break;
@@ -1505,6 +1575,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       case 'startSet': startSet(); break;
       case 'cell': ui.modal = {type:'cell', t:t, i:i}; render(); break;
       case 'enter': doEnter(b.getAttribute('data-p')); break;
+      case 'excOpen': ui.modal.exc = true; render(); break;
+      case 'excEnter': doExc(b.getAttribute('data-p')); break;
       case 'libin': doLibIn(b.getAttribute('data-p')); break;
       case 'libout': doLibOut(); break;
       case 'sanc': ui.modal = {type:'sanc', t:0, typeKey:'amon', who:''}; render(); break;
