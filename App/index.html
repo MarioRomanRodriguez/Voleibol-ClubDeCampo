@@ -92,7 +92,9 @@ label.f:first-child{margin-top:0}
 .cell.gone{border-color:var(--red);border-width:3px;opacity:.6}
 .cell:disabled{cursor:default}
 .cell.lusel{border-color:var(--c);border-width:3px;background:var(--soft)}
-.pickb.used{opacity:.28;cursor:default}
+.pickb.used{opacity:.6}
+.pickb.here{border-color:var(--ink);box-shadow:0 0 0 2px var(--a-soft)}
+.pickb small{font-size:.62rem;color:var(--muted)}
 .pt{background:var(--c);color:#fff;font-size:1.1rem;padding:16px 8px}
 .tm{margin-top:6px;font-size:.85rem;padding:10px 6px}
 .bar{position:fixed;left:0;right:0;bottom:0;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line);z-index:20}
@@ -101,7 +103,7 @@ label.f:first-child{margin-top:0}
 .bar .btn+.btn{margin-top:0}
 
 /* plantillas */
-.rrow{display:grid;grid-template-columns:52px 1fr 36px 36px 30px;gap:6px;margin-bottom:6px;align-items:center}
+.rrow{display:grid;grid-template-columns:52px 1fr 36px 36px 44px;gap:6px;margin-bottom:6px;align-items:center}
 .rrow .txt{padding:9px 8px}
 .rn{text-align:center;font-weight:700}
 .tg{height:38px;border-radius:8px;border:1.5px solid var(--line);background:var(--card);font-weight:800;cursor:pointer}
@@ -176,6 +178,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
 .savebox .btn{margin-top:10px}
 .welcome{text-align:center}.welcome .tick{width:84px;height:84px;border-radius:50%;background:#2e9e5b;color:#fff;font-size:3rem;font-weight:900;display:flex;align-items:center;justify-content:center;margin:6px auto 10px}
 .welcome h3{font-size:1.35rem}
+.ssum{margin:0 2px 8px;font-size:.88rem}.srow{display:flex;gap:10px;padding:3px 0;border-bottom:1px solid var(--line)}.srow .sl{font-weight:800;min-width:46px}.srow .sv{flex:1;min-width:0;font-variant-numeric:tabular-nums}.srow.cur .sv{color:var(--muted);font-style:italic}
+.tg.bj{font-size:.68rem;font-weight:700;color:var(--muted)}
 .lnk{border:0;background:none;color:var(--a);font:inherit;font-weight:700;cursor:pointer;padding:0 0 0 6px}
 </style>
 </head>
@@ -198,8 +202,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   var ROMAN = ['I','II','III','IV','V','VI'];
   var FRONT = [3,2,1], BACK = [4,5,0];
   var SANC = {
-    amon:{label:'Amonestación', m:'W'},
-    pen:{label:'Penalización', pt:true, m:'P'},
+    amon:{label:'Amonestación (tarjeta amarilla)', m:'W'},
+    pen:{label:'Tarjeta roja (penalización)', pt:true, m:'P'},
     exp:{label:'Expulsión', out:true, m:'E'},
     des:{label:'Descalificación', out:true, dq:true, m:'D'},
     retA:{label:'Retraso (advertencia)', m:'W'},
@@ -234,8 +238,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     return null;
   }
   function loadG(){
-    try { var r = localStorage.getItem(GKEY); if (r){ var g = JSON.parse(r); if (g && Array.isArray(g.results)) return {results:g.results, num:g.num || {}, email:g.email || '', remote:g.remote || [], remoteActas:g.remoteActas || [], actas:g.actas || {}, queue:g.queue || [], sent:g.sent || {}, okAt:g.okAt || {}, pin:g.pin || '', ref:!!g.ref, url:g.url || '', last:g.last || 0}; } } catch(e){}
-    return {results:[], num:{}, email:'', remote:[], remoteActas:[], actas:{}, queue:[], sent:{}, okAt:{}, pin:'', ref:false, url:'', last:0};
+    try { var r = localStorage.getItem(GKEY); if (r){ var g = JSON.parse(r); if (g && Array.isArray(g.results)) return {results:g.results, num:g.num || {}, email:g.email || '', remote:g.remote || [], remoteActas:g.remoteActas || [], actas:g.actas || {}, queue:g.queue || [], sent:g.sent || {}, okAt:g.okAt || {}, bajas:Array.isArray(g.bajas) ? g.bajas : [], pin:g.pin || '', ref:!!g.ref, url:g.url || '', last:g.last || 0}; } } catch(e){}
+    return {results:[], num:{}, email:'', remote:[], remoteActas:[], actas:{}, queue:[], sent:{}, okAt:{}, bajas:[], pin:'', ref:false, url:'', last:0};
   }
   function saveG(){ try { localStorage.setItem(GKEY, JSON.stringify(G)); } catch(e){} }
   S = load() || fresh();
@@ -389,10 +393,12 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     try {
       while (G.queue.length){
         var q = G.queue[0], body = {key:G.pin, op:q.op, id:q.id};
+        if (q.op === 'cfg') body.cfg = q.cfg;
         if (q.op === 'put'){ body.result = q.result; body.acta = G.actas[q.id] ? JSON.stringify(G.actas[q.id]) : ''; }
         var res = await fetch(url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(body), signal:tmo(30000)});
         var j = await res.json();
         if (j && j.error === 'pin'){ G.pinBad = true; G.lastErr = 'la clave no coincide con la del servidor'; break; }
+        if (q.op === 'cfg' && j && j.error === 'op'){ G.queue = G.queue.filter(function(x){ return x !== q; }); continue; }   // servidor antiguo: las bajas quedan solo en este móvil
         if (!j || !j.ok){ G.lastErr = 'el servidor respondió: ' + ((j && j.error) || 'sin datos'); break; }
         G.pinBad = false; G.lastErr = ''; G.okAt[q.id] = Date.now();
         G.queue = G.queue.filter(function(x){ return x !== q; }); sent++; saveG();
@@ -418,6 +424,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       if (j && Array.isArray(j.results)){
         var rem = [], ids = {};
         j.results.forEach(function(x){ var c = cleanResult(x); if (c){ rem.push(c); ids[c.id] = 1; } });
+        if (j.cfg && Array.isArray(j.cfg.bajas) && !G.queue.some(function(q){ return q.op === 'cfg'; })) G.bajas = j.cfg.bajas.filter(function(x){ return typeof x === 'string'; }).slice(0, 300);
         G.remote = rem; G.remoteActas = Array.isArray(j.actas) ? j.actas.filter(function(x){ return typeof x === 'string'; }) : []; G.last = Date.now(); G.syncErr = false; ok = true;
         if (!G.queue.length){
           G.results = G.results.filter(function(r){
@@ -453,7 +460,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function syncLine(){
     if (!syncBase()) return '';
     var t = G.last ? (G.syncErr ? 'Sin conexión. Datos de las ' : 'Actualizado a las ') + hhmmOf(G.last) : (G.syncErr ? 'Sin conexión todavía.' : 'Cargando…');
-    if (G.queue.length) t += ' · ' + G.queue.length + (G.queue.length === 1 ? ' resultado pendiente de subir' : ' resultados pendientes de subir') + (G.pin ? '' : ' (falta la clave de árbitro)');
+    var npend = G.queue.filter(function(q){ return q.op !== 'cfg'; }).length;
+    if (npend) t += ' · ' + npend + (npend === 1 ? ' resultado pendiente de subir' : ' resultados pendientes de subir') + (G.pin ? '' : ' (falta la clave de árbitro)');
     var h = '<p class="sync">' + esc(t) + '</p>';
     if (G.queue.length && G.lastErr) h += '<p class="sync" style="color:var(--red)">No se pudo subir: ' + esc(G.lastErr) + '.</p>';
     return h + '<button class="btn upd" data-a="refresh"' + (ui.busy ? ' disabled' : '') + '>' + (ui.busy ? 'Actualizando…' : '↻ Actualizar clasificación') + '</button>';
@@ -687,10 +695,13 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   }
 
   /* ---------- plantillas ---------- */
+  function isBaja(team, name){ return G.bajas.indexOf(team + '|' + name) > -1; }
+  function setBajas(){ saveG(); if (syncBase() && G.pin) enqueue({op:'cfg', id:'cfg', cfg:G.bajas}); }
   function teamData(name){ return LEAGUE.filter(function(t){ return t.name === name; })[0] || null; }
   function buildDraft(t){
     var td = teamData(S.names[t]), mem = G.num[S.names[t]] || {}, rows = [];
     (td ? td.players : []).forEach(function(p){
+      if (isBaja(S.names[t], p)) return;
       var m = mem[p] || {};
       rows.push({name:p, n:m.n || '', cap:!!m.cap, lib:!!m.lib, extra:false});
     });
@@ -888,8 +899,11 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
           (p.extra ? '<input class="txt" data-r="name" data-t="' + t + '" data-i="' + i + '" value="' + esc(p.name) + '" placeholder="Nombre" aria-label="Nombre">' : '<div class="pname">' + esc(p.name) + '</div>') +
           '<button class="tg' + (p.cap ? ' on' : '') + '" data-a="rcap" data-t="' + t + '" data-i="' + i + '" aria-label="Capitán" aria-pressed="' + p.cap + '">C</button>' +
           '<button class="tg' + (p.lib ? ' on' : '') + '" data-a="rlib" data-t="' + t + '" data-i="' + i + '" aria-label="Líbero" aria-pressed="' + p.lib + '">L</button>' +
-          (p.extra ? '<button class="tg xx" data-a="rdel" data-t="' + t + '" data-i="' + i + '" aria-label="Quitar jugador">×</button>' : '<span></span>') + '</div>';
+          (p.extra ? '<button class="tg xx" data-a="rdel" data-t="' + t + '" data-i="' + i + '" aria-label="Quitar jugador">×</button>' : (!S.setStarts.length ? '<button class="tg bj" data-a="bajaAsk" data-t="' + t + '" data-i="' + i + '" aria-label="Dar de baja a ' + esc(p.name) + '">Baja</button>' : '<span></span>')) + '</div>';
       });
+      var bj = [], tdd = teamData(S.names[t]);
+      if (tdd && !S.setStarts.length) tdd.players.forEach(function(nm, pi){ if (isBaja(S.names[t], nm)) bj.push({nm:nm, pi:pi}); });
+      if (bj.length) h += '<p class="legend2" style="margin-top:8px"><b>De baja en el equipo:</b></p>' + bj.map(function(x){ return '<div class="rrow" style="grid-template-columns:1fr auto"><div class="pname" style="color:var(--muted)">' + esc(x.nm) + '</div><button class="tg bj" style="padding:0 10px" data-a="bajaUndo" data-t="' + t + '" data-pi="' + x.pi + '">Reactivar</button></div>'; }).join('');
       h += '<button class="btn sec" data-a="radd" data-t="' + t + '">Añadir otro jugador</button></div>';
     }
     h += '<div class="err" id="err" role="alert">' + esc(ui.error) + '</div>' +
@@ -914,14 +928,14 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       (n ? '<b>' + esc(n) + '</b><em>' + esc(nm) + '</em>' : '<b style="opacity:.22">—</b>') + '</button>';
   }
   function playerPickerHTML(){
-    var s = ui.luSel; if (!s) return '';
-    var t = s.t, assigned = {};
-    if (S.start[t]) S.start[t].forEach(function(n){ if (n) assigned[n] = 1; });
+    var s0 = ui.luSel; if (!s0) return '';
+    var t = s0.t, assigned = {};
+    if (S.start[t]) S.start[t].forEach(function(n, k){ if (n) assigned[n] = k + 1; });
     var players = S.roster[t].filter(function(p){ return !p.lib && !(S.inj && S.inj[t].indexOf(p.n) > -1); });
-    var h = '<p style="margin:0 0 8px;font-size:.88rem;color:var(--muted)">Elige jugador para posición <b>' + ROMAN[s.i] + '</b> de ' + esc(S.names[t]) + ':</p><div class="pick">';
+    var h = '<p style="margin:0 0 8px;font-size:.88rem;color:var(--muted)">Elige jugador para posición <b>' + ROMAN[s0.i] + '</b> de ' + esc(S.names[t]) + '. Si ya está en otra posición, se cambian de sitio:</p><div class="pick">';
     players.forEach(function(p){
-      var here = getStart(t, s.i) === p.n, used = assigned[p.n] && !here;
-      h += '<button class="pickb' + (used ? ' used' : '') + '" data-a="luassign" data-t="' + t + '" data-n="' + esc(p.n) + '"' + (used ? ' disabled' : '') + '><b>' + esc(p.n) + '</b><em>' + esc(p.name || '') + '</em></button>';
+      var at = assigned[p.n], here = getStart(t, s0.i) === p.n, moved = at && !here;
+      h += '<button class="pickb' + (moved ? ' used' : '') + (here ? ' here' : '') + '" data-a="luassign" data-t="' + t + '" data-n="' + esc(p.n) + '"><b>' + esc(p.n) + '</b><em>' + esc(p.name || '') + '</em>' + (moved ? '<small>ahora en ' + ROMAN[at - 1] + '</small>' : '') + '</button>';
     });
     return h + '</div>';
   }
@@ -938,11 +952,12 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     o.forEach(function(t){
       h += '<div class="card lu tc t' + t + '"><div class="thd">' + esc(S.names[t]) + '</div>' +
         '<div class="court"><div class="net"></div><div class="grid">' + FRONT.map(function(i){ return lineupCellHTML(t, i); }).join('') + '</div></div>' +
-        '<div class="grid" style="margin-bottom:4px">' + BACK.map(function(i){ return lineupCellHTML(t, i); }).join('') + '</div></div>';
+        '<div class="grid" style="margin-bottom:4px">' + BACK.map(function(i){ return lineupCellHTML(t, i); }).join('') + '</div>' +
+        '<button class="btn sec" data-a="luclear" data-t="' + t + '">Limpiar alineación de ' + esc(S.names[t]) + '</button></div>';
     });
     h += '</div>';
     if (ui.luSel) h += '<div class="card" id="lupicker">' + playerPickerHTML() + '</div>';
-    h += '<p class="hint">Fila de arriba: red (IV III II). Fila de abajo: zaga (V VI I). El líbero entra en pista durante el partido.</p>' +
+    h += '<p class="hint">Fila de arriba: red (IV III II). Fila de abajo: zaga (V VI I). Para mover a un jugador toca la posición nueva y elígelo: si ya estaba en otra, se intercambian. El líbero entra en pista durante el partido.</p>' +
       '<div class="err" id="err" role="alert">' + esc(ui.error) + '</div>' +
       '<button class="btn" data-a="startSet">Empezar set ' + S.setNo + '</button>' +
       '<button class="btn sec" data-a="editRoster">Editar plantillas</button>';
@@ -967,12 +982,21 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       BACK.map(function(i){ return cellHTML(t, i, live); }).join('') + '</div>';
   }
 
+  function setsSummaryHTML(){
+    var h = '<div class="ssum">';
+    S.setScores.forEach(function(sc, k){
+      var sw = S.setStarts[k] && S.setStarts[k].swap, l = sw ? 1 : 0, r = 1 - l;
+      h += '<div class="srow"><span class="sl">Set ' + (k + 1) + '</span><span class="sv">' + esc(S.names[l]) + ' <b>' + sc[l] + '-' + sc[r] + '</b> ' + esc(S.names[r]) + '</span></div>';
+    });
+    if (S.phase === 'play') h += '<div class="srow cur"><span class="sl">Set ' + S.setNo + '</span><span class="sv">En proceso</span></div>';
+    return h + '</div>';
+  }
   function viewPlay(){
     var live = S.phase === 'play', o = order();
     var prev = S.setScores.length ? S.setScores.map(function(s){ return s[0] + '-' + s[1]; }).join(' · ') : '';
     var h = '<div class="top"><div class="setno">Set ' + S.setNo + ' <span style="font-weight:500;color:var(--muted)">a ' + target() + '</span></div>' +
       '<div class="sets">Sets: ' + S.setsWon[o[0]] + ' – ' + S.setsWon[o[1]] + '</div></div>' +
-      (prev ? '<div class="prev">Sets anteriores (A-B): ' + esc(prev) + '</div>' : '');
+      setsSummaryHTML();
     if (S.notice) h += '<div class="notice" role="status"><span>' + esc(S.notice) + '</span><button data-a="dismiss">Entendido</button></div>';
     h += '<div class="teams">';
     o.forEach(function(t){
@@ -1081,9 +1105,9 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     var h = '<h3>Sanción</h3><p class="sub0">Se anota en el registro y en el PDF.</p>' +
       '<div class="seg"><button data-a="sancTeam" data-t="0" class="ta' + (t === 0 ? ' on' : '') + '">' + esc(S.names[0]) + '</button>' +
       '<button data-a="sancTeam" data-t="1" class="tb' + (t === 1 ? ' on' : '') + '">' + esc(S.names[1]) + '</button></div>' +
-      '<p class="hint">Amonestación (amarilla): solo una por equipo y partido.</p><label class="f" for="sType">Tipo</label><select id="sType" data-m="type">';
+      '<p class="hint">Amarilla (amonestación): solo una por equipo y partido. Tarjeta roja (penalización): el equipo sancionado pierde el saque y el rival suma un punto.</p><label class="f" for="sType">Tipo</label><select id="sType" data-m="type">';
     if (m.typeKey === 'amon' && amonUsed(t)) m.typeKey = 'retA';
-    Object.keys(SANC).forEach(function(k){ var dis = (k === 'amon' && amonUsed(t)); h += '<option value="' + k + '"' + (m.typeKey === k ? ' selected' : '') + (dis ? ' disabled' : '') + '>' + SANC[k].label + (dis ? ' (ya puesta a este equipo)' : '') + (SANC[k].pt ? ' (punto al rival)' : '') + '</option>'; });
+    Object.keys(SANC).forEach(function(k){ var dis = (k === 'amon' && amonUsed(t)); h += '<option value="' + k + '"' + (m.typeKey === k ? ' selected' : '') + (dis ? ' disabled' : '') + '>' + SANC[k].label + (dis ? ' (ya puesta a este equipo)' : '') + (SANC[k].pt ? ' (punto y saque al rival)' : '') + '</option>'; });
     h += '</select><label class="f" for="sWho">Sancionado</label><select id="sWho" data-m="who"><option value="">—</option>' +
       '<option value="ENT"' + (m.who === 'ENT' ? ' selected' : '') + '>Entrenador</option><option value="AUX"' + (m.who === 'AUX' ? ' selected' : '') + '>Auxiliar</option>';
     S.roster[t].forEach(function(p){ h += '<option value="' + esc(p.n) + '"' + (m.who === p.n ? ' selected' : '') + '>' + esc(p.n + (p.name ? ' ' + p.name : '') + (p.lib ? ' (L)' : '')) + '</option>'; });
@@ -1159,6 +1183,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     else if (m.type === 'sanc') body = sancModal();
     else if (m.type === 'log') body = logModal();
     else if (m.type === 'more') body = moreModal();
+    else if (m.type === 'baja') body = '<h3>¿Dar de baja a ' + esc(m.name) + '?</h3><p class="sub0">Dejará de aparecer en la plantilla de ' + esc(S.names[m.t]) + ' para todos los árbitros. Podrás reactivarlo desde esta misma pantalla.</p>' +
+      '<button class="btn warn" data-a="bajaDo">Sí, dar de baja</button><button class="btn sec" data-a="closeModal">Cancelar</button>';
     else if (m.type === 'add') body = addModal();
     else if (m.type === 'backLU') body = '<h3>¿Volver a las alineaciones?</h3><p class="sub0">Se borra todo lo anotado en el set ' + S.setNo + ' (puntos, cambios, tiempos muertos y sanciones) y vuelves a poner las alineaciones. Los sets anteriores se conservan.</p>' +
       '<button class="btn warn" data-a="backLUDo">Sí, volver a las alineaciones</button><button class="btn sec" data-a="closeModal">No, seguir con el set</button>';
@@ -1651,6 +1677,9 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         S.phase = 'lineup'; ui.error = ''; ui.luSel = null; commit(); window.scrollTo(0, 0); break;
       }
       case 'editRoster': S.phase = 'roster'; ui.error = ''; commit(); break;
+      case 'luclear':
+        S.start[t] = ['','','','','',''];
+        ui.luSel = {t:t, i:0}; save(); render(); break;
       case 'lupick':
         ui.luSel = {t:t, i:i};
         save(); render();
@@ -1659,7 +1688,9 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       case 'luassign': {
         var nn = b.getAttribute('data-n'), si = ui.luSel ? ui.luSel.i : FRONT[0];
         if (!S.start[t]) S.start[t] = [];
-        for (var kk = 0; kk < 6; kk++){ if (S.start[t][kk] === nn) S.start[t][kk] = ''; }
+        for (var k0 = 0; k0 < 6; k0++) if (!S.start[t][k0]) S.start[t][k0] = '';
+        var oldAt = S.start[t].indexOf(nn), curAt = S.start[t][si];
+        if (oldAt > -1 && oldAt !== si) S.start[t][oldAt] = curAt;      // si ya estaba en otra posición, se intercambian
         S.start[t][si] = nn;
         ui.luSel = luAutoNext(t, si);
         save(); render();
@@ -1675,6 +1706,17 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       case 'cell': ui.modal = {type:'cell', t:t, i:i}; render(); break;
       case 'enter': doEnter(b.getAttribute('data-p')); break;
       case 'more': ui.modal = {type:'more'}; render(); break;
+      case 'bajaAsk': syncRoster(); ui.modal = {type:'baja', t:t, i:i, name:S.draft[t][i].name}; render(); break;
+      case 'bajaDo': {
+        var bm = ui.modal, bp = S.draft[bm.t][bm.i];
+        if (bp && !bp.extra){ var bk = S.names[bm.t] + '|' + bp.name; if (G.bajas.indexOf(bk) === -1) G.bajas.push(bk); S.draft[bm.t].splice(bm.i, 1); setBajas(); }
+        ui.modal = null; commit(); toast('Jugador dado de baja'); break;
+      }
+      case 'bajaUndo': {
+        var tdx = teamData(S.names[t]), nmx = tdx ? tdx.players[parseInt(b.getAttribute('data-pi'), 10)] : null;
+        if (nmx){ syncRoster(); G.bajas = G.bajas.filter(function(k){ return k !== S.names[t] + '|' + nmx; }); S.draft[t].push({name:nmx, n:'', cap:false, lib:false, extra:false}); setBajas(); commit(); toast('Jugador reactivado'); }
+        break;
+      }
       case 'pdfMore': ui.modal = null; render(); exportPDF(); break;
       case 'addOpen': ui.modal = {type:'add', t:0, who:'new', name:'', num:''}; render(); break;
       case 'addTeam': ui.modal.t = t; ui.modal.who = 'new'; render(); break;
