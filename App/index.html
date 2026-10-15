@@ -154,6 +154,23 @@ textarea{min-height:90px;resize:vertical}
 .stand{font-size:.9rem}.stand th,.stand td{padding:7px 3px}
 .stand th:nth-child(2),.stand td.tn2{text-align:left}
 .stand td.tn2{font-weight:600}.stand td.pts{font-weight:900}
+.stand tr.pod.p1{--pc:rgba(240,185,11,.26);--pa:#e5ac00}
+.stand tr.pod.p2{--pc:rgba(160,170,182,.26);--pa:#9aa3ad}
+.stand tr.pod.p3{--pc:rgba(205,127,50,.24);--pa:#c27a38}
+.stand tr.pod{background:linear-gradient(90deg,var(--pc),transparent 88%)}
+.stand tr.pod td:first-child{box-shadow:inset 4px 0 0 var(--pa)}
+.stand tr.pod td.tn2{font-weight:800}
+.medal{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-weight:900;font-size:.85rem;border:1.5px solid rgba(0,0,0,.18);box-shadow:0 1px 3px rgba(0,0,0,.35),inset 0 1px 1px rgba(255,255,255,.75)}
+.medal.m1{background:radial-gradient(circle at 30% 25%,#fff7b8,#f5c518 55%,#c48a05);color:#3b2a00}
+.medal.m2{background:radial-gradient(circle at 30% 25%,#ffffff,#d6dbe1 55%,#97a0aa);color:#27303a}
+.medal.m3{background:radial-gradient(circle at 30% 25%,#ffdcb4,#d98c4a 55%,#99581f);color:#3a1d05}
+.res .spb{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.res .spb button{padding:9px 13px;font-size:.88rem;border-radius:10px}
+.res li small.md{font-weight:700;color:var(--a);margin-top:1px}
+.res li small.susptxt{color:#b35c00;font-weight:700}
+.btn.susp{margin-top:8px}
+label.chk{display:flex;gap:8px;align-items:flex-start;margin:12px 0;font-size:.92rem}
+label.chk input{width:22px;height:22px;flex:none;margin-top:1px}
 .res{list-style:none;margin:0;padding:0}
 .res li{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.92rem}
 .res li .m{flex:1;min-width:0}.res li small{display:block;color:var(--muted);font-size:.76rem;margin-top:2px}
@@ -200,7 +217,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   // Dirección del servidor compartido (ver el archivo LEEME-SERVIDOR). Si la dejas vacía, cada móvil puede pegarla en Inicio.
   var SYNC_URL = 'https://script.google.com/macros/s/AKfycbwVZDC1yFQvhF6p0iUA4bZJ1L5n8LHUAxnz8ef4kljieAgmhbc2ip0-SXtAmI2yzKnCsA/exec';
   var CALENDAR = [{"n": 1, "d": "2026-10-18", "m": [["16:00", "Achicharraraitos", "Kaoticos"], ["16:00", "Yusihayas", "Los Cheques"], ["16:00", "Los Tiesos", "Clan Voley"], ["17:30", "Tequila", "Racatá"], ["17:30", "Elásticos 2.0", "Los Chulos"]]}, {"n": 2, "d": "2026-11-08", "m": [["16:00", "Racatá", "Yusihayas"], ["16:00", "Los Chulos", "Los Tiesos"], ["16:00", "Elásticos 2.0", "Tequila"], ["17:30", "Los Cheques", "Achicharraraitos"], ["17:30", "Clan Voley", "Kaoticos"]]}, {"n": 3, "d": "2026-11-15", "m": [["16:00", "Achicharraraitos", "Clan Voley"], ["16:00", "Los Cheques", "Racatá"], ["16:00", "Kaoticos", "Los Chulos"], ["17:30", "Yusihayas", "Elásticos 2.0"], ["17:30", "Los Tiesos", "Tequila"]]}, {"n": 4, "d": "2026-11-22", "m": [["16:00", "Elásticos 2.0", "Los Cheques"], ["16:00", "Tequila", "Kaoticos"], ["16:00", "Los Tiesos", "Yusihayas"], ["17:30", "Racatá", "Achicharraraitos"], ["17:30", "Los Chulos", "Clan Voley"]]}, {"n": 5, "d": "2026-11-29", "m": [["16:00", "Achicharraraitos", "Los Chulos"], ["16:00", "Racatá", "Elásticos 2.0"], ["16:00", "Clan Voley", "Tequila"], ["17:30", "Los Cheques", "Los Tiesos"], ["17:30", "Kaoticos", "Yusihayas"]]}, {"n": 6, "d": "2026-12-13", "m": [["16:00", "Elásticos 2.0", "Achicharraraitos"], ["16:00", "Los Tiesos", "Racatá"], ["16:00", "Kaoticos", "Los Cheques"], ["17:30", "Tequila", "Los Chulos"], ["17:30", "Yusihayas", "Clan Voley"]]}, {"n": 7, "d": "2027-01-10", "m": [["16:00", "Achicharraraitos", "Tequila"], ["16:00", "Los Chulos", "Yusihayas"], ["16:00", "Clan Voley", "Los Cheques"], ["17:30", "Elásticos 2.0", "Los Tiesos"], ["17:30", "Racatá", "Kaoticos"]]}, {"n": 8, "d": "2027-01-17", "m": [["16:00", "Yusihayas", "Tequila"], ["16:00", "Kaoticos", "Elásticos 2.0"], ["16:00", "Clan Voley", "Racatá"], ["17:30", "Los Tiesos", "Achicharraraitos"], ["17:30", "Los Cheques", "Los Chulos"]]}, {"n": 9, "d": "2027-01-31", "m": [["16:00", "Achicharraraitos", "Yusihayas"], ["16:00", "Los Tiesos", "Kaoticos"], ["16:00", "Los Chulos", "Racatá"], ["17:30", "Tequila", "Los Cheques"], ["17:30", "Elásticos 2.0", "Clan Voley"]]}, {"n": "R", "d": "2027-02-07", "m": []}];
-  var APP_VERSION = 'v10';
+  var APP_VERSION = 'v11';
+  var CAL0 = JSON.parse(JSON.stringify(CALENDAR));
   var MAX_SUBS = 8;   // máximo de sustituciones por equipo y set
   var ROMAN = ['I','II','III','IV','V','VI'];
   var FRONT = [3,2,1], BACK = [4,5,0];
@@ -241,12 +259,13 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     return null;
   }
   function loadG(){
-    try { var r = localStorage.getItem(GKEY); if (r){ var g = JSON.parse(r); if (g && Array.isArray(g.results)) return {results:g.results, num:g.num || {}, email:g.email || '', remote:g.remote || [], remoteActas:g.remoteActas || [], actas:g.actas || {}, queue:g.queue || [], sent:g.sent || {}, okAt:g.okAt || {}, bajas:Array.isArray(g.bajas) ? g.bajas : [], pin:g.pin || '', ref:!!g.ref, url:g.url || '', last:g.last || 0}; } } catch(e){}
-    return {results:[], num:{}, email:'', remote:[], remoteActas:[], actas:{}, queue:[], sent:{}, okAt:{}, bajas:[], pin:'', ref:false, url:'', last:0};
+    try { var r = localStorage.getItem(GKEY); if (r){ var g = JSON.parse(r); if (g && Array.isArray(g.results)) return {results:g.results, num:g.num || {}, email:g.email || '', remote:g.remote || [], remoteActas:g.remoteActas || [], actas:g.actas || {}, queue:g.queue || [], sent:g.sent || {}, okAt:g.okAt || {}, bajas:Array.isArray(g.bajas) ? g.bajas : [], pin:g.pin || '', ref:!!g.ref, admin:!!g.admin, sched:(g.sched && typeof g.sched === 'object') ? g.sched : {}, url:g.url || '', last:g.last || 0}; } } catch(e){}
+    return {results:[], num:{}, email:'', remote:[], remoteActas:[], actas:{}, queue:[], sent:{}, okAt:{}, bajas:[], pin:'', ref:false, admin:false, sched:{}, url:'', last:0};
   }
   function saveG(){ try { localStorage.setItem(GKEY, JSON.stringify(G)); } catch(e){} }
   S = load() || fresh();
   G = loadG();
+  applySched();
   // Recupera un partido terminado que quedó en 'inicio' por un fallo de la versión anterior
   if (S.phase === 'home' && S.matchId && S.winner != null && S.setScores && S.setScores.length) S.phase = 'done';
 
@@ -337,7 +356,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       var r = resultObj();
       if (i > -1) G.results[i] = r; else G.results.push(r);
       saveG(); shareCurrent(r);
-    } else if (i > -1 && (S.phase === 'play' || S.phase === 'setend')){   // solo si se resta un punto del último set y el partido deja de estar terminado
+    } else if (i > -1 && G.results[i].np !== 's' && (S.phase === 'play' || S.phase === 'setend')){   // solo si se resta un punto del último set y el partido deja de estar terminado
       G.results.splice(i, 1); saveG(); dropShared(S.matchId);
     }
   }
@@ -348,7 +367,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     if (!r || typeof r.id !== 'string' || r.id.length > 40) return null;
     if (!teamData(r.a) || !teamData(r.b) || r.a === r.b) return null;
     if (r.bo !== 3 && r.bo !== 5) return null;
-    if (!Array.isArray(r.sets) || r.sets.length < 2 || r.sets.length > 5) return null;
+    var sp = r.np === 's';
+    if (!Array.isArray(r.sets) || r.sets.length > 5 || (!sp && r.sets.length < 2)) return null;
     var ok = true;
     var sets = r.sets.map(function(x){
       if (!Array.isArray(x) || x.length !== 2){ ok = false; return [0,0]; }
@@ -357,7 +377,9 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       return [p, q];
     });
     if (!ok) return null;
-    return {id:r.id, d:/^\d{4}-\d{2}-\d{2}$/.test(r.d) ? r.d : '', a:r.a, b:r.b, sets:sets, bo:r.bo, np:(r.np === 'a' || r.np === 'b') ? r.np : '', j:String(r.j || '').slice(0, 12), jor:String(r.jor || '').slice(0, 20)};
+    var out = {id:r.id, d:/^\d{4}-\d{2}-\d{2}$/.test(r.d) ? r.d : '', a:r.a, b:r.b, sets:sets, bo:r.bo, np:(r.np === 'a' || r.np === 'b' || r.np === 's') ? r.np : '', j:String(r.j || '').slice(0, 12), jor:String(r.jor || '').slice(0, 20)};
+    if (sp && Array.isArray(r.cur) && r.cur.length === 2){ var c0 = parseInt(r.cur[0], 10), c1 = parseInt(r.cur[1], 10); if (c0 >= 0 && c0 <= 99 && c1 >= 0 && c1 <= 99) out.cur = [c0, c1]; }
+    return out;
   }
   function allResults(){
     var map = {}, out = [];
@@ -365,6 +387,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     G.results.forEach(function(r){ if (map[r.id] != null) out[map[r.id]] = r; else out.push(r); });
     return out;
   }
+  function playedResults(){ return allResults().filter(function(r){ return r.np !== 's'; }); }
   function enqueue(item){
     G.queue = G.queue.filter(function(x){ return x.id !== item.id; });
     G.queue.push(item); saveG(); updateSaveBox(); flush();
@@ -397,13 +420,15 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       while (G.queue.length){
         var q = G.queue[0], body = {key:G.pin, op:q.op, id:q.id};
         if (q.op === 'cfg') body.cfg = q.cfg;
+        if (q.op === 'sched') body.sched = q.sched;
         if (q.op === 'put'){ body.result = q.result; body.acta = G.actas[q.id] ? JSON.stringify(G.actas[q.id]) : ''; }
         var res = await fetch(url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(body), signal:tmo(30000)});
         var j = await res.json();
         if (j && j.error === 'pin'){ G.pinBad = true; G.lastErr = 'la clave no coincide con la del servidor'; break; }
         if (q.op === 'cfg' && j && j.error === 'op'){ G.queue = G.queue.filter(function(x){ return x !== q; }); continue; }   // servidor antiguo: las bajas quedan solo en este móvil
+        if (q.op === 'sched' && j && (j.error === 'op' || j.error === 'admin')){ G.queue = G.queue.filter(function(x){ return x !== q; }); G.schedErr = j.error === 'op' ? 'server' : 'admin'; saveG(); continue; }
         if (!j || !j.ok){ G.lastErr = 'el servidor respondió: ' + ((j && j.error) || 'sin datos'); break; }
-        G.pinBad = false; G.lastErr = ''; G.okAt[q.id] = Date.now();
+        G.pinBad = false; G.lastErr = ''; G.okAt[q.id] = Date.now(); if (q.op === 'sched') G.schedErr = '';
         G.queue = G.queue.filter(function(x){ return x !== q; }); sent++; saveG();
       }
     } catch(e){ G.lastErr = 'sin conexión con el servidor'; }
@@ -429,6 +454,15 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         j.results.forEach(function(x){ var c = cleanResult(x); if (c){ rem.push(c); ids[c.id] = 1; } });
         if (j.cfg && Array.isArray(j.cfg.bajas) && !G.queue.some(function(q){ return q.op === 'cfg'; })) G.bajas = j.cfg.bajas.filter(function(x){ return typeof x === 'string'; }).slice(0, 300);
         G.remote = rem; G.remoteActas = Array.isArray(j.actas) ? j.actas.filter(function(x){ return typeof x === 'string'; }) : []; G.last = Date.now(); G.syncErr = false; ok = true;
+        var remBy = {}; rem.forEach(function(x){ remBy[x.id] = x; });
+        G.results = G.results.filter(function(r){          // un suspendido que otro móvil ya terminó: manda el servidor
+          if (r.np === 's' && remBy[r.id] && remBy[r.id].np !== 's' && !G.queue.some(function(q){ return q.id === r.id; })){ delete G.actas[r.id]; return false; }
+          return true;
+        });
+        if ('sched' in j && !G.queue.some(function(q){ return q.op === 'sched'; })){
+          var ns = cleanSched(j.sched);
+          if (JSON.stringify(ns) !== JSON.stringify(cleanSched(G.sched))){ G.sched = ns; applySched(); if (hadData) toast('Calendario actualizado ✓'); }
+        }
         if (!G.queue.length){
           G.results = G.results.filter(function(r){
             if (ids[r.id]) return true;
@@ -448,14 +482,14 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     if (ui.modal) return;
     var ae = document.activeElement;
     if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return;
-    if (S.phase === 'home' || ui.view || S.phase === 'done') render();
+    if (S.phase === 'home' || ui.view || S.phase === 'done' || S.phase === 'susp') render();
   }
   async function checkPin(k){
     var url = syncBase(); if (!url) return 'off';
     try {
       var res = await fetch(url, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({key:k, op:'check', id:'check'})});
       var j = await res.json();
-      return (j && j.error === 'pin') ? 'bad' : 'ok';     // cualquier otra respuesta significa que la clave es correcta
+      return (j && j.error === 'pin') ? 'bad' : ((j && j.rol === 'admin') ? 'admin' : 'ok');     // cualquier otra respuesta significa que la clave es correcta
     } catch(e){ return 'net'; }
   }
   function hasActa(id){ return !!(G.actas && G.actas[id]) || (G.remoteActas || []).indexOf(id) > -1; }
@@ -463,7 +497,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function syncLine(){
     if (!syncBase()) return '';
     var t = G.last ? (G.syncErr ? 'Sin conexión. Datos de las ' : 'Actualizado a las ') + hhmmOf(G.last) : (G.syncErr ? 'Sin conexión todavía.' : 'Cargando…');
-    var npend = G.queue.filter(function(q){ return q.op !== 'cfg'; }).length;
+    var npend = G.queue.filter(function(q){ return q.op !== 'cfg' && q.op !== 'sched'; }).length;
     if (npend) t += ' · ' + npend + (npend === 1 ? ' resultado pendiente de subir' : ' resultados pendientes de subir') + (G.pin ? '' : ' (falta la clave de árbitro)');
     var h = '<p class="sync">' + esc(t) + '</p>';
     if (G.queue.length && G.lastErr) h += '<p class="sync" style="color:var(--red)">No se pudo subir: ' + esc(G.lastErr) + '.</p>';
@@ -500,7 +534,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     var J = calJ(n), m = J.m[k];
     newMatch();
     S.names = [m[1], m[2]]; S.info.cat = String(n); S.info.juego = String((n - 1) * 5 + k + 1);
-    S.info.fecha = fmtDate(J.d); S.matchId = 'j' + n + '-' + (k + 1); S.dateISO = J.d; S.bestOf = 5; S.sched = true;
+    S.info.fecha = fmtDate(m[3] || J.d); S.matchId = 'j' + n + '-' + (k + 1); S.dateISO = m[3] || J.d; S.bestOf = 5; S.sched = true;
     buildDraft(0); buildDraft(1);
     S.phase = 'roster'; ui.view = null; ui.jor = null; ui.error = ''; ui.luSel = null; ui.modal = null;
     commit(); window.scrollTo(0, 0);
@@ -508,7 +542,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function standings(){
     var T = {};
     LEAGUE.forEach(function(t){ T[t.name] = {name:t.name, pj:0, g:0, p:0, pts:0, sf:0, sc:0, pf:0, pc:0}; });
-    allResults().forEach(function(r){
+    playedResults().forEach(function(r){
       var A = T[r.a], B = T[r.b]; if (!A || !B) return;
       var sa = 0, sb = 0, pa = 0, pb = 0;
       r.sets.forEach(function(s){ pa += s[0]; pb += s[1]; if (s[0] > s[1]) sa++; else sb++; });
@@ -756,10 +790,243 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     var rows = standings();
     var h = '<div class="card tight"><table class="stand"><tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>P</th><th>Sets</th><th>Pts</th></tr>';
     rows.forEach(function(r, i){
-      h += '<tr><td>' + (i + 1) + '</td><td class="tn2">' + esc(r.name) + '</td><td>' + r.pj + '</td><td>' + r.g + '</td><td>' + r.p + '</td><td>' + r.sf + '-' + r.sc + '</td><td class="pts">' + r.pts + '</td></tr>';
+      h += '<tr' + podCls(r, i) + '><td>' + medal(r, i) + '</td><td class="tn2">' + esc(r.name) + '</td><td>' + r.pj + '</td><td>' + r.g + '</td><td>' + r.p + '</td><td>' + r.sf + '-' + r.sc + '</td><td class="pts">' + r.pts + '</td></tr>';
     });
     return h + '</table></div>';
   }
+
+  /* ---------- calendario editable (organización) ---------- */
+  function okISO(x){ return typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x) && !isNaN(new Date(x + 'T00:00:00Z').getTime()); }
+  function okHM(x){ return typeof x === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(x); }
+  function addDays(iso, n){ var d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+  function diffDays(a, b){ return Math.round((new Date(b + 'T00:00:00Z').getTime() - new Date(a + 'T00:00:00Z').getTime()) / 86400000); }
+  function cleanSched(x){
+    function part(y){
+      var r = {jd:{}, mt:{}, md:{}};
+      if (y && typeof y === 'object'){
+        Object.keys(y.jd || {}).forEach(function(k){ if (/^(\d{1,2}|R)$/.test(k) && okISO(y.jd[k])) r.jd[k] = y.jd[k]; });
+        Object.keys(y.mt || {}).forEach(function(k){ if (/^j(\d{1,2}|R)-\d{1,2}$/.test(k) && okHM(y.mt[k])) r.mt[k] = y.mt[k]; });
+        Object.keys(y.md || {}).forEach(function(k){ if (/^j(\d{1,2}|R)-\d{1,2}$/.test(k) && okISO(y.md[k])) r.md[k] = y.md[k]; });
+      }
+      return r;
+    }
+    var o = part(x); o.u = (x && Array.isArray(x.u)) ? x.u.slice(-15).map(part) : [];
+    return o;
+  }
+  function applySched(){
+    var s = cleanSched(G.sched);
+    CALENDAR.forEach(function(J, i){
+      var o = CAL0[i], key = String(o.n);
+      J.d = s.jd[key] || o.d;
+      J.m = o.m.map(function(m, k){
+        var id = 'j' + key + '-' + (k + 1), row = [s.mt[id] || m[0], m[1], m[2]];
+        if (s.md[id]) row[3] = s.md[id];
+        return row;
+      });
+    });
+  }
+  function finishSched(){
+    G.sched = cleanSched(G.sched); applySched(); saveG();
+    enqueue({op:'sched', id:'sched', sched:G.sched});
+    render();
+  }
+  function schedCommit(mut){
+    var s = G.sched = cleanSched(G.sched);
+    var snap = {jd:JSON.parse(JSON.stringify(s.jd)), mt:JSON.parse(JSON.stringify(s.mt)), md:JSON.parse(JSON.stringify(s.md))};
+    mut(s);
+    s.u = s.u.concat([snap]).slice(-15);
+    finishSched();
+  }
+  // Cambia la fecha de la jornada n sumando delta días; con cascade también mueve todas las siguientes
+  function shiftFrom(n, delta, cascade){
+    var idx = -1;
+    CALENDAR.forEach(function(J, i){ if (String(J.n) === String(n)) idx = i; });
+    if (idx < 0 || !delta) return;
+    schedCommit(function(s){
+      CALENDAR.forEach(function(J, i){
+        if (cascade ? i < idx : i !== idx) return;
+        var key = String(J.n);
+        s.jd[key] = addDays(J.d, delta);
+        J.m.forEach(function(m, k){ var id = 'j' + key + '-' + (k + 1); if (s.md[id]) s.md[id] = addDays(s.md[id], delta); });
+      });
+    });
+  }
+  function setMatchTime(id, hm, iso){
+    schedCommit(function(s){
+      if (okHM(hm)) s.mt[id] = hm; else delete s.mt[id];
+      if (okISO(iso)) s.md[id] = iso; else delete s.md[id];
+    });
+  }
+  function schedUndo(){
+    var s = cleanSched(G.sched);
+    if (!s.u.length){ toast('No hay ningún cambio que deshacer.'); return; }
+    var p = s.u.pop(); s.jd = p.jd; s.mt = p.mt; s.md = p.md;
+    G.sched = s; finishSched(); toast('Último cambio deshecho ✓');
+  }
+  function viewAdmin(){
+    var s = cleanSched(G.sched);
+    var h = '<h1>Administración</h1><p class="sub">Fechas y horarios de la liga. Los cambios los ven todos los árbitros.</p>';
+    if (G.schedErr === 'server') h += '<div class="notice"><span>El servidor aún no está actualizado: los cambios solo se ven en este móvil. Pega el nuevo Codigo.gs y crea una «Nueva versión».</span></div>';
+    else if (G.schedErr === 'admin') h += '<div class="notice"><span>La clave que usaste no es la de organización: los cambios solo se ven en este móvil.</span></div>';
+    h += '<button class="btn warn" data-a="schedUndo"' + (s.u.length ? '' : ' disabled') + '>↶ Deshacer el último cambio' + (s.u.length ? ' (' + s.u.length + ')' : '') + '</button>';
+    h += '<div class="card"><h2>Jornadas</h2><p class="hint" style="margin-top:0">«Aplazar» mueve esa jornada y todas las siguientes una semana. «Cambiar fecha» permite elegir el día y, si quieres, mover también las siguientes.</p><ul class="res">';
+    CALENDAR.forEach(function(J, i){
+      var moved = J.d !== CAL0[i].d;
+      h += '<li><span class="m"><b>' + (J.n === 'R' ? 'Fecha reservada' : 'Jornada ' + J.n) + '</b><small>' + esc(fmtLong(J.d)) + (moved ? ' · antes ' + esc(fmtDate(CAL0[i].d)) : '') + '</small>' +
+        '<span class="spb"><button data-a="post" data-v="' + J.n + '">Aplazar 1 semana</button><button data-a="editj" data-v="' + J.n + '">Cambiar fecha</button></span></span></li>';
+    });
+    h += '</ul></div><div class="card"><h2>Horarios de los partidos</h2><p class="hint" style="margin:0">Entra en <b>Partidos</b>, abre la jornada y pulsa «Cambiar hora o día» en el partido.</p></div>';
+    return h + '<button class="btn sec" data-a="matches">Ir a los partidos</button><button class="btn sec" data-a="closeView">Volver</button>';
+  }
+  function editjModal(){
+    var J = calJ(ui.modal.n); if (!J) return '';
+    return '<h3>' + (J.n === 'R' ? 'Fecha reservada' : 'Jornada ' + esc(J.n)) + ': cambiar fecha</h3><p class="sub0">Ahora: ' + esc(fmtLong(J.d)) + '</p>' +
+      '<label class="f" for="ejD">Nueva fecha</label><input class="txt" type="date" id="ejD" value="' + esc(J.d) + '">' +
+      '<label class="chk"><input type="checkbox" id="ejC" checked> Mover también las jornadas siguientes (el mismo número de días)</label>' +
+      '<div class="err" id="merr" role="alert"></div>' +
+      '<button class="btn" data-a="editjDo">Guardar</button><button class="btn sec" data-a="closeModal">Cancelar</button>';
+  }
+  function postModal(){
+    var J = calJ(ui.modal.n); if (!J) return '';
+    var nx = 0; CALENDAR.forEach(function(X, i){ if (String(X.n) === String(J.n)) nx = CALENDAR.length - i - 1; });
+    return '<h3>¿Aplazar una semana?</h3><p class="sub0">' + (J.n === 'R' ? 'La fecha reservada' : 'La jornada ' + esc(J.n)) + ' pasa del ' + esc(fmtLong(J.d)) + ' al ' + esc(fmtLong(addDays(J.d, 7))) + (nx ? ' y las ' + nx + ' siguientes también se mueven una semana' : '') + '. Se puede deshacer.</p>' +
+      '<button class="btn warn" data-a="postDo">Sí, aplazar</button><button class="btn sec" data-a="closeModal">Cancelar</button>';
+  }
+  function editmModal(){
+    var J = calJ(ui.modal.n), m = J && J.m[ui.modal.k]; if (!m) return '';
+    return '<h3>' + esc(m[1]) + ' vs ' + esc(m[2]) + '</h3><p class="sub0">Cambiar hora o día de este partido.</p>' +
+      '<label class="f" for="emT">Hora</label><input class="txt" type="time" id="emT" value="' + esc(m[0]) + '">' +
+      '<label class="f" for="emD">Día</label><input class="txt" type="date" id="emD" value="' + esc(m[3] || J.d) + '">' +
+      '<div class="err" id="merr" role="alert"></div>' +
+      '<button class="btn" data-a="editmDo">Guardar</button><button class="btn sec" data-a="editmReset">Volver al horario original</button><button class="btn sec" data-a="closeModal">Cancelar</button>';
+  }
+
+  /* ---------- clasificación: podio ---------- */
+  function podCls(r, i){ return (i < 3 && r.pj > 0) ? ' class="pod p' + (i + 1) + '"' : ''; }
+  function medal(r, i){ return (i < 3 && r.pj > 0) ? '<span class="medal m' + (i + 1) + '" aria-label="Puesto ' + (i + 1) + '">' + (i + 1) + '</span>' : String(i + 1); }
+
+  /* ---------- suspensión y reanudación ---------- */
+  function suspLineHTML(r, same){
+    var sc = scoreOf(r), x = same ? sc[0] : sc[1], y = same ? sc[1] : sc[0];
+    var A = same ? r.a : r.b, B = same ? r.b : r.a;
+    var cur = r.cur ? (same ? r.cur[0] + '-' + r.cur[1] : r.cur[1] + '-' + r.cur[0]) : '';
+    var sets = r.sets.map(function(q){ return same ? q[0] + '-' + q[1] : q[1] + '-' + q[0]; }).join(', ');
+    return '<b>' + esc(A) + ' ' + x + ' - ' + y + ' ' + esc(B) + '</b><small class="susptxt">Suspendido' + (sets ? ' · ' + esc(sets) : '') + (cur ? ' · set ' + (r.sets.length + 1) + ' en ' + esc(cur) : (r.sets.length ? ' · entre sets' : '')) + '</small>';
+  }
+  function suspResult(){
+    var r = {id:S.matchId, d:S.dateISO || new Date().toISOString().slice(0, 10), a:S.names[0], b:S.names[1],
+      sets:S.setScores.map(function(x){ return [x[0], x[1]]; }), bo:S.bestOf, np:'s', j:S.info.juego || '', jor:S.info.cat || ''};
+    if (S.susp && S.susp.cur) r.cur = [S.susp.cur[0], S.susp.cur[1]];
+    return r;
+  }
+  function suspState(){
+    var t = S.names[0] + ' ' + S.setsWon[0] + '–' + S.setsWon[1] + ' ' + S.names[1];
+    if (S.phase === 'play') t += ', set ' + S.setNo + ' en ' + S.score[0] + '–' + S.score[1];
+    return t;
+  }
+  function suspAskModal(){
+    return '<h3>¿Suspender el partido?</h3><p class="sub0">' + esc(suspState()) + '.</p>' +
+      '<p class="hint">Se guarda ahora el acta tal como está y el partido queda como <b>suspendido</b>. Aparecerá en la jornada con el botón «Continuar» para reanudarlo.</p>' +
+      '<button class="btn warn" data-a="suspDo">Sí, suspender y guardar</button><button class="btn sec" data-a="closeModal">No, seguir jugando</button>';
+  }
+  function doSuspend(){
+    if (S.phase !== 'play' && S.phase !== 'setend' && S.phase !== 'lineup'){ ui.modal = null; render(); return; }
+    if (!S.matchId){ ui.modal = null; render(); toast('Este partido aún no ha empezado.'); return; }
+    closeTimeout();
+    var ph = S.phase, cur = ph === 'play' ? [S.score[0], S.score[1]] : null;
+    ev(null, 'susp', 'Partido suspendido a las ' + hhmm() + (cur ? ' en el set ' + S.setNo + ' con ' + cur[0] + '-' + cur[1] : ' entre sets'));
+    S.susp = {ph:ph, cur:cur, at:Date.now(), hh:hhmm()};
+    S.phase = 'susp'; ui.modal = null; ui.error = ''; hist = [];
+    var r = suspResult(), i = -1;
+    G.results.forEach(function(x, k){ if (x.id === r.id) i = k; });
+    if (i > -1) G.results[i] = r; else G.results.push(r);
+    var c = JSON.parse(JSON.stringify(S)); c.draft = [[],[]]; c.notice = '';
+    G.actas[r.id] = c; saveG(); save();
+    uploadResult(r, true);
+    render(); window.scrollTo(0, 0);
+  }
+  function viewSusp(){
+    var cur = S.susp && S.susp.cur;
+    return '<div class="homehead" style="margin-bottom:6px"><img class="logo" style="width:70px;height:70px" src="' + LOGO + '" alt=""><h1>Partido suspendido</h1><p class="sub">' + esc(S.names[0]) + ' vs ' + esc(S.names[1]) + '</p></div>' +
+      '<div id="savebox">' + saveBoxHTML() + '</div>' +
+      '<div class="card"><div class="big">' + S.setsWon[0] + ' – ' + S.setsWon[1] + '</div>' + (S.setScores.length ? setsTable() : '') +
+      (cur ? '<p style="text-align:center;margin:10px 0 0">Set ' + S.setNo + ' en juego: <b>' + esc(S.names[0]) + ' ' + cur[0] + ' – ' + cur[1] + ' ' + esc(S.names[1]) + '</b></p>' : '') + '</div>' +
+      '<div class="card"><p class="hint" style="margin:0">En la jornada aparece como «Suspendido» con el botón <b>Continuar</b>, para reanudarlo desde cualquier móvil de árbitro.</p></div>' +
+      '<button class="btn sec" data-a="pdf">Descargar PDF ahora</button>';
+  }
+  async function getActa(id){
+    var st = G.actas[id];
+    if (!st){
+      try {
+        var url = syncBase();
+        var res = await fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + 'acta=' + encodeURIComponent(id) + '&t=' + Date.now(), {signal:tmo(25000)});
+        st = await res.json();
+      } catch(e){ st = null; }
+    }
+    return (st && st.names && st.setScores) ? st : null;
+  }
+  async function resumeAsk(id){
+    toast('Cargando el partido…');
+    var st = await getActa(id);
+    if (!st || !st.susp){ toast('No se pudo cargar el partido suspendido. Revisa la conexión.', 5000); return; }
+    ui.resumeActa = st;
+    var busy = !(S.phase === 'home' || S.phase === 'done' || (S.phase === 'susp' && matchSaved()));
+    ui.modal = {type:'resume', id:id, busy:busy};
+    render();
+  }
+  function resumeModal(){
+    var st = ui.resumeActa; if (!st) return '';
+    var su = st.susp, nm = st.names, won = st.setsWon;
+    var h = '<h3>Reanudar partido</h3><p class="sub0">' + esc(nm[0]) + ' ' + won[0] + '–' + won[1] + ' ' + esc(nm[1]) + '</p>';
+    if (ui.modal.busy) h += '<p class="hint" style="color:var(--red);font-weight:700">Se borra el partido que tienes abierto en este móvil.</p>';
+    if (su.ph === 'play' && su.cur){
+      h += '<p class="hint">Se suspendió en el set ' + st.setNo + ' con ' + esc(nm[0]) + ' ' + su.cur[0] + ' – ' + su.cur[1] + ' ' + esc(nm[1]) + '. ¿Cómo se reanuda?</p>' +
+        '<button class="btn" data-a="resumeDo" data-mode="keep">Seguir el set ' + st.setNo + ' en ' + su.cur[0] + '–' + su.cur[1] + '</button>' +
+        '<p class="hint" style="margin:2px 2px 12px">Misma rotación, saque y jugadores en pista.</p>' +
+        '<button class="btn sec" data-a="resumeDo" data-mode="restart">Repetir el set ' + st.setNo + ' desde 0–0</button>' +
+        '<p class="hint" style="margin:2px 2px 12px">Se anula el set interrumpido y se ponen las alineaciones con las que empezó (se pueden cambiar).</p>';
+    } else if (su.ph === 'setend'){
+      h += '<p class="hint">Se suspendió al terminar el set ' + st.setNo + '. Se reanuda con el set siguiente: pondrás las alineaciones.</p><button class="btn" data-a="resumeDo" data-mode="keep">Reanudar</button>';
+    } else {
+      h += '<p class="hint">Se suspendió antes de empezar el set ' + st.setNo + '. Pondrás las alineaciones y empezará el set.</p><button class="btn" data-a="resumeDo" data-mode="keep">Reanudar</button>';
+    }
+    return h + '<button class="btn sec" data-a="closeModal">Cancelar</button>';
+  }
+  function draftFromRoster(){
+    for (var t = 0; t < 2; t++){
+      buildDraft(t);
+      S.draft[t].forEach(function(d){ d.n = ''; d.cap = false; d.lib = false; });
+      (S.roster[t] || []).forEach(function(p){
+        var row = S.draft[t].filter(function(d){ return d.name === p.name; })[0];
+        if (row){ row.n = p.n; row.cap = !!p.cap; row.lib = !!p.lib; }
+        else S.draft[t].push({name:p.name, n:p.n, cap:!!p.cap, lib:!!p.lib, extra:true});
+      });
+    }
+  }
+  function doResume(mode){
+    var st = ui.resumeActa; if (!st){ ui.modal = null; render(); return; }
+    var ph = st.susp ? st.susp.ph : 'lineup', cur = st.susp ? st.susp.cur : null;
+    S = JSON.parse(JSON.stringify(st)); hist = []; closeTimeout();
+    delete S.susp; S.sched = true; S.notice = ''; S.winner = null;
+    draftFromRoster();
+    if (ph === 'play' && mode === 'restart'){
+      var ss = S.setStarts.pop(), sn = S.setNo;
+      S.pts = S.pts.filter(function(p){ return p.s !== sn; });
+      S.events = S.events.filter(function(e){ return e.s !== sn; });
+      S.score = [0,0]; S.tm = [2,2]; S.subs = [0,0]; S.lib = [null,null]; S.out = [[],[]]; S.cc = false; S.pl = [{},{}];
+      if (ss){ S.first = ss.first; S.swap = !!ss.swap; S.start = [ss.start[0].slice(), ss.start[1].slice()]; }
+      S.lineup = [S.start[0].slice(), S.start[1].slice()];
+      S.phase = 'lineup'; ui.luSel = null;
+      ev(null, 'susp', 'Partido reanudado: se repite el set ' + sn + ' desde 0-0 (se anula el interrumpido' + (cur ? ' en ' + cur[0] + '-' + cur[1] : '') + ')');
+    } else {
+      S.phase = ph; ui.luSel = null;
+      ev(null, 'susp', 'Partido reanudado' + (ph === 'play' && cur ? ' en el set ' + S.setNo + ' con ' + cur[0] + '-' + cur[1] : ''));
+    }
+    ui.resumeActa = null; ui.modal = null; ui.view = null; ui.jor = null; ui.error = '';
+    commit(); window.scrollTo(0, 0);
+    toast('Partido reanudado ✓');
+  }
+
   function viewHome(){
     var h = '<div class="verwrap"><span class="ver">' + APP_VERSION + '</span></div><div class="homehead"><img class="logo" src="' + LOGO + '" alt="Delegación de Vóley Club de Campo Sevilla"><h1>Delegación Voleibol Club de Campo</h1><p class="sub">Liga 2026-2027</p></div>' +
       '<h3 class="grp" style="margin-top:0">Clasificación</h3>' + standTableHTML() + syncLine();
@@ -773,6 +1040,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     }
     return h + '<button class="btn" data-a="matches">Partidos</button>' +
       '<button class="btn sec" data-a="history">Historial de actas</button>' +
+      (G.admin ? '<button class="btn sec" data-a="admin">Administración: fechas y horarios</button>' : '') +
       '<button class="btn sec" data-a="standings">Clasificación y resultados</button>' +
       '<button class="btn sec" data-a="newMatch">Partido libre (fuera del calendario)</button>' +
       '<div class="card" style="margin-top:14px"><h2>Ajustes</h2>' +
@@ -786,29 +1054,34 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     var nx = nextJornada();
     var h = '<h1>Partidos</h1><p class="sub">Elige la jornada.</p>';
     CALENDAR.forEach(function(J){
-      var tot = J.m.length, done = J.m.filter(function(m){ return findResult(J.n, m[1], m[2]); }).length;
-      h += '<button class="jor' + (J.n === nx ? ' next' : '') + '" data-a="jor" data-v="' + J.n + '"><b>' + (J.n === 'R' ? 'Fecha reservada' : 'Jornada ' + J.n) + '</b><span>' + fmtLong(J.d) + (J.n === nx ? ' · próxima' : '') + '</span><em>' + (tot ? done + '/' + tot + ' jugados' : 'Sin partidos') + '</em></button>';
+      var tot = J.m.length, done = J.m.filter(function(m){ var q = findResult(J.n, m[1], m[2]); return q && q.np !== 's'; }).length, nsu = J.m.filter(function(m){ var q = findResult(J.n, m[1], m[2]); return q && q.np === 's'; }).length;
+      h += '<button class="jor' + (J.n === nx ? ' next' : '') + '" data-a="jor" data-v="' + J.n + '"><b>' + (J.n === 'R' ? 'Fecha reservada' : 'Jornada ' + J.n) + '</b><span>' + fmtLong(J.d) + (J.n === nx ? ' · próxima' : '') + '</span><em>' + (tot ? done + '/' + tot + ' jugados' + (nsu ? ' · ' + nsu + ' susp.' : '') : 'Sin partidos') + '</em></button>';
     });
     return h + '<button class="btn sec" data-a="closeView">Volver</button>';
   }
   function viewJornada(n){
     var J = calJ(n); if (!J) return '';
     var h = '<h1>' + (J.n === 'R' ? 'Fecha reservada' : 'Jornada ' + J.n) + '</h1><p class="sub">' + fmtLong(J.d) + '</p>';
+    if (G.admin) h += '<button class="btn sec" data-a="editj" data-v="' + J.n + '">Cambiar fecha de la jornada</button>';
     if (!J.m.length) h += '<div class="card"><p class="hint" style="margin:0">Fecha pendiente de asignación de partidos.</p></div>';
     else {
       h += '<div class="card"><ul class="res">';
       J.m.forEach(function(m, k){
-        var r = findResult(J.n, m[1], m[2]), id = 'j' + J.n + '-' + (k + 1), live = S.matchId === id && S.phase !== 'home' && S.phase !== 'done';
-        var mid, btn;
-        if (r){
+        var r = findResult(J.n, m[1], m[2]), id = 'j' + J.n + '-' + (k + 1), live = S.matchId === id && S.phase !== 'home' && S.phase !== 'done' && S.phase !== 'susp';
+        var mid, btn = '', tm = esc(m[0]) + (m[3] ? '<small class="md">' + esc(fmtDate(m[3]).slice(0, 5)) + '</small>' : '');
+        if (r && r.np === 's'){
+          mid = suspLineHTML(r, m[1] === r.a) + '<span class="spb">' + (hasActa(r.id) ? '<button data-a="actapdf" data-id="' + esc(r.id) + '">Acta PDF</button>' : '') +
+            (G.ref ? '<button class="go" data-a="resume" data-id="' + esc(r.id) + '">Continuar</button>' : '') + (G.admin ? '<button data-a="delres" data-id="' + esc(r.id) + '">Borrar</button>' : '') + '</span>';
+        } else if (r){
           var sc = scoreOf(r), same = r.a === m[1];
           mid = '<b>' + esc(m[1]) + ' ' + (same ? sc[0] : sc[1]) + ' - ' + (same ? sc[1] : sc[0]) + ' ' + esc(m[2]) + '</b><small>' + (r.np ? 'No presentado · ' : '') + esc(r.sets.map(function(x){ return same ? x[0] + '-' + x[1] : x[1] + '-' + x[0]; }).join(', ')) + '</small>';
           btn = hasActa(r.id) ? '<button data-a="actapdf" data-id="' + esc(r.id) + '">Acta PDF</button>' : '';
         } else {
           mid = '<b>' + esc(m[1]) + ' vs ' + esc(m[2]) + '</b><small>' + (live ? 'En curso en este móvil' : 'Pendiente') + '</small>';
+          if (G.admin && !live) mid += '<span class="spb"><button data-a="editm" data-v="' + J.n + '" data-k="' + k + '">Cambiar hora o día</button></span>';
           btn = live ? '<button class="go" data-a="closeView">Continuar</button>' : '<button class="go" data-a="playMatch" data-v="' + J.n + '" data-k="' + k + '">Arbitrar</button>';
         }
-        h += '<li><span class="hr">' + esc(m[0]) + '</span><span class="m">' + mid + '</span>' + btn + '</li>';
+        h += '<li><span class="hr">' + tm + '</span><span class="m">' + mid + '</span>' + btn + '</li>';
       });
       h += '</ul></div>';
     }
@@ -824,6 +1097,10 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       var J = k === '-' ? null : calJ(k);
       h += '<h3 class="grp">' + (k === '-' ? 'Sin jornada' : 'Jornada ' + esc(k) + (J ? ' · ' + fmtLong(J.d) : '')) + '</h3><div class="card"><ul class="res">';
       groups[k].forEach(function(r){
+        if (r.np === 's'){
+          h += '<li><span class="m">' + suspLineHTML(r, true) + '<span class="spb">' + (hasActa(r.id) ? '<button data-a="actapdf" data-id="' + esc(r.id) + '">Acta PDF</button>' : '') + (G.ref ? '<button class="go" data-a="resume" data-id="' + esc(r.id) + '">Continuar</button>' : '') + '</span></span></li>';
+          return;
+        }
         var sc = scoreOf(r);
         h += '<li><span class="m"><b>' + esc(r.a) + ' ' + sc[0] + ' - ' + sc[1] + ' ' + esc(r.b) + '</b><small>' + (r.np ? 'No presentado: ' + esc(r.np === 'a' ? r.a : r.b) + ' · ' : '') + esc(r.sets.map(function(x){ return x[0] + '-' + x[1]; }).join(', ')) + (r.d ? ' · ' + fmtDate(r.d) : '') + '</small></span>' +
           (hasActa(r.id) ? '<button class="go" data-a="actapdf" data-id="' + esc(r.id) + '">Acta PDF</button>' : '') + '</li>';
@@ -835,17 +1112,17 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
 
   function viewStandings(){
     var rows = standings();
-    var h = '<h1>Clasificación</h1><p class="sub">Liga 2026-2027 · ' + allResults().length + (allResults().length === 1 ? ' partido jugado' : ' partidos jugados') + '</p>' +
+    var h = '<h1>Clasificación</h1><p class="sub">Liga 2026-2027 · ' + playedResults().length + (playedResults().length === 1 ? ' partido jugado' : ' partidos jugados') + '</p>' +
       '<div class="card tight"><table class="stand"><tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>P</th><th>Sets</th><th>Pts</th></tr>';
     rows.forEach(function(r, i){
-      h += '<tr><td>' + (i + 1) + '</td><td class="tn2">' + esc(r.name) + '</td><td>' + r.pj + '</td><td>' + r.g + '</td><td>' + r.p + '</td><td>' + r.sf + '-' + r.sc + '</td><td class="pts">' + r.pts + '</td></tr>';
+      h += '<tr' + podCls(r, i) + '><td>' + medal(r, i) + '</td><td class="tn2">' + esc(r.name) + '</td><td>' + r.pj + '</td><td>' + r.g + '</td><td>' + r.p + '</td><td>' + r.sf + '-' + r.sc + '</td><td class="pts">' + r.pts + '</td></tr>';
     });
     h += '</table><p class="hint">Ganador: +2 puntos. Perdedor: +1. No presentado: −1 (el rival gana +2). Desempate: victorias, diferencia de sets y de puntos.</p></div>';
     h += '<div class="card"><h2>Partidos</h2>';
-    if (!allResults().length) h += '<p class="hint" style="margin:0">Todavía no hay partidos terminados.</p>';
+    if (!playedResults().length) h += '<p class="hint" style="margin:0">Todavía no hay partidos terminados.</p>';
     else {
       h += '<ul class="res">';
-      allResults().slice().reverse().forEach(function(r){
+      playedResults().slice().reverse().forEach(function(r){
         var sa = 0, sb = 0; r.sets.forEach(function(s){ if (s[0] > s[1]) sa++; else sb++; });
         h += '<li><span class="m"><b>' + esc(r.a) + ' ' + sa + ' - ' + sb + ' ' + esc(r.b) + '</b><small>' + (r.np ? 'No presentado: ' + esc(r.np === 'a' ? r.a : r.b) + ' · ' : '') + esc(r.sets.map(function(s){ return s[0] + '-' + s[1]; }).join(', ')) +
           (r.d ? ' · ' + fmtDate(r.d) : '') + (r.jor ? ' · Jornada ' + esc(r.jor) : '') + '</small></span>' +
@@ -963,7 +1240,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     h += '<p class="hint">Fila de arriba: red (IV III II). Fila de abajo: zaga (V VI I). Para mover a un jugador toca la posición nueva y elígelo: si ya estaba en otra, se intercambian. El líbero entra en pista durante el partido.</p>' +
       '<div class="err" id="err" role="alert">' + esc(ui.error) + '</div>' +
       '<button class="btn" data-a="startSet">Empezar set ' + S.setNo + '</button>' +
-      '<button class="btn sec" data-a="editRoster">Editar plantillas</button>';
+      '<button class="btn sec" data-a="editRoster">Editar plantillas</button>' +
+      (S.setScores.length ? '<button class="btn sec susp" data-a="suspAsk">Suspender partido</button>' : '');
     return h;
   }
 
@@ -1011,7 +1289,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         '<button class="btn sec tm" data-a="tm" data-t="' + t + '"' + (live && S.tm[t] > 0 ? '' : ' disabled') + '>Tiempo muerto (' + S.tm[t] + ')</button></section>';
     });
     h += '</div><p class="hint">Toca un jugador para hacer un cambio o meter al líbero. Cambios en este set: ' +
-      esc(S.names[0]) + ' ' + S.subs[0] + '/' + MAX_SUBS + ' · ' + esc(S.names[1]) + ' ' + S.subs[1] + '/' + MAX_SUBS + '.</p>';
+      esc(S.names[0]) + ' ' + S.subs[0] + '/' + MAX_SUBS + ' · ' + esc(S.names[1]) + ' ' + S.subs[1] + '/' + MAX_SUBS + '.</p>' +
+      '<button class="btn sec susp" data-a="suspAsk">Suspender partido (lluvia u otra causa)</button>';
     if (S.phase === 'setend'){
       var last = S.setScores[S.setScores.length - 1], w = last[0] > last[1] ? 0 : 1;
       h += '<div class="card"><div style="text-align:center;color:var(--muted)">Set ' + S.setNo + ' para ' + esc(S.names[w]) + '</div>' +
@@ -1037,14 +1316,14 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   }
   function matchSaved(){ return !syncBase() || (!G.queue.some(function(q){ return q.id === S.matchId; }) && !!G.okAt[S.matchId]); }
   function saveBoxHTML(){
-    if (matchSaved()) return '<div class="savebox ok"><b>✓ Resultado y acta guardados en el historial</b><button class="btn" data-a="accept">Aceptar</button></div>';
-    var h = '<div class="savebox wait"><b>Guardando resultado y acta…</b><p>No cierres ni vuelvas atrás hasta que aparezca «Aceptar».</p>';
+    if (matchSaved()) return '<div class="savebox ok"><b>' + (S.phase === 'susp' ? '✓ Partido suspendido y acta guardada' : '✓ Resultado y acta guardados en el historial') + '</b><button class="btn" data-a="accept">Aceptar</button></div>';
+    var h = '<div class="savebox wait"><b>' + (S.phase === 'susp' ? 'Guardando el partido suspendido…' : 'Guardando resultado y acta…') + '</b><p>No cierres ni vuelvas atrás hasta que aparezca «Aceptar».</p>';
     if (G.lastErr) h += '<p style="color:var(--red)">No se pudo guardar: ' + esc(G.lastErr) + '.</p><button class="btn" data-a="retrySave">Reintentar</button><button class="btn sec" data-a="leaveUnsaved">Salir y subirlo más tarde</button>';
     else h += '<button class="btn" disabled>Aceptar</button>';
     return h + '</div>';
   }
   function updateSaveBox(){
-    if (S.phase !== 'done') return;
+    if (S.phase !== 'done' && S.phase !== 'susp') return;
     var el = $('savebox'); if (!el) return;
     el.innerHTML = saveBoxHTML();
     var ok = matchSaved();
@@ -1124,6 +1403,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       '<button class="btn" data-a="addOpen">Añadir jugador al acta</button>' +
       '<button class="btn sec" data-a="backLUAsk"' + (can ? '' : ' disabled') + '>Volver a las alineaciones</button>' +
       '<button class="btn sec" data-a="pdfMore">Descargar PDF</button>' +
+      '<button class="btn warn" data-a="suspAsk">Suspender partido</button>' +
       (can ? '' : '<p class="hint">«Volver a las alineaciones» solo está disponible mientras se juega un set.</p>') +
       '<button class="btn sec" data-a="closeModal">Cerrar</button>';
   }
@@ -1191,7 +1471,12 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     else if (m.type === 'add') body = addModal();
     else if (m.type === 'backLU') body = '<h3>¿Volver a las alineaciones?</h3><p class="sub0">Se borra todo lo anotado en el set ' + S.setNo + ' (puntos, cambios, tiempos muertos y sanciones) y vuelves a poner las alineaciones. Los sets anteriores se conservan.</p>' +
       '<button class="btn warn" data-a="backLUDo">Sí, volver a las alineaciones</button><button class="btn sec" data-a="closeModal">No, seguir con el set</button>';
-    else if (m.type === 'welcome') body = '<div class="welcome"><div class="tick">✓</div><h3>Sesión de árbitro iniciada</h3><p class="sub0">La clave es correcta. Ya puedes arbitrar partidos y consultar el historial.</p><button class="btn" data-a="closeModal">Seguir</button></div>';
+    else if (m.type === 'welcome') body = '<div class="welcome"><div class="tick">✓</div><h3>' + (m.admin ? 'Sesión de organización iniciada' : 'Sesión de árbitro iniciada') + '</h3><p class="sub0">' + (m.admin ? 'Clave de organización correcta. Además de arbitrar, puedes cambiar fechas y horarios en «Administración».' : 'La clave es correcta. Ya puedes arbitrar partidos y consultar el historial.') + '</p><button class="btn" data-a="closeModal">Seguir</button></div>';
+    else if (m.type === 'suspAsk') body = suspAskModal();
+    else if (m.type === 'resume') body = resumeModal();
+    else if (m.type === 'editj') body = editjModal();
+    else if (m.type === 'editm') body = editmModal();
+    else if (m.type === 'post') body = postModal();
     else if (m.type === 'import') body = importModal();
     else if (m.type === 'copy') body = copyModal();
     else if (m.type === 'delres') body = delresModal();
@@ -1207,7 +1492,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
 
   function render(){
     var app = $('app'), scroll = window.scrollY;
-    app.innerHTML = !G.ref ? (ui.view === 'standings' ? viewStandings() : viewHome()) : ui.view === 'standings' ? viewStandings() : ui.view === 'matches' ? viewMatches() : ui.view === 'history' ? viewHistory() : S.phase === 'home' ? viewHome() : S.phase === 'setup' ? viewSetup() : S.phase === 'roster' ? viewRoster() : S.phase === 'lineup' ? viewLineup() : S.phase === 'done' ? viewDone() : viewPlay();
+    app.innerHTML = !G.ref ? (ui.view === 'standings' ? viewStandings() : viewHome()) : ui.view === 'standings' ? viewStandings() : ui.view === 'matches' ? viewMatches() : (ui.view === 'admin' && G.admin) ? viewAdmin() : ui.view === 'history' ? viewHistory() : S.phase === 'home' ? viewHome() : S.phase === 'setup' ? viewSetup() : S.phase === 'roster' ? viewRoster() : S.phase === 'lineup' ? viewLineup() : S.phase === 'done' ? viewDone() : S.phase === 'susp' ? viewSusp() : viewPlay();
     var layer = $('layer'), tb = layer.querySelector('.tmbox');
     layer.innerHTML = (tb ? tb.outerHTML : '') + modalHTML();
     window.scrollTo(0, scroll);
@@ -1610,12 +1895,12 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         if (!lp){ ui.loginErr = 'Escribe la clave.'; render(); break; }
         ui.loginErr = 'Comprobando…'; $('loginErr').textContent = ui.loginErr;
         checkPin(lp).then(function(r){
-          if (r === 'ok'){ G.pin = lp; G.ref = true; G.pinBad = false; ui.loginErr = ''; saveG(); flush(); render(); window.scrollTo(0, 0); ui.modal = {type:'welcome'}; render(); }
+          if (r === 'ok' || r === 'admin'){ G.pin = lp; G.ref = true; G.admin = (r === 'admin'); G.pinBad = false; ui.loginErr = ''; saveG(); flush(); render(); window.scrollTo(0, 0); ui.modal = {type:'welcome', admin:G.admin}; render(); }
           else { ui.loginErr = r === 'bad' ? 'Clave incorrecta.' : 'No hay conexión con el servidor. Inténtalo de nuevo.'; render(); toast(ui.loginErr, 4000); }
         });
         break;
       }
-      case 'logout': toast('Has salido del modo árbitro'); G.ref = false; G.pin = ''; ui.view = null; ui.jor = null; saveG(); render(); window.scrollTo(0, 0); break;
+      case 'logout': toast('Has salido del modo árbitro'); G.ref = false; G.admin = false; G.pin = ''; ui.view = null; ui.jor = null; saveG(); render(); window.scrollTo(0, 0); break;
       case 'refresh': {
         if (ui.busy) break;
         ui.busy = true; render();
@@ -1628,6 +1913,30 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         break;
       }
       case 'actapdf': shareActa(b.getAttribute('data-id')); break;
+      case 'suspAsk': ui.modal = {type:'suspAsk'}; render(); break;
+      case 'suspDo': doSuspend(); break;
+      case 'resume': resumeAsk(b.getAttribute('data-id')); break;
+      case 'resumeDo': doResume(b.getAttribute('data-mode')); break;
+      case 'admin': ui.view = 'admin'; render(); window.scrollTo(0, 0); pull(); break;
+      case 'editj': ui.modal = {type:'editj', n:b.getAttribute('data-v')}; render(); break;
+      case 'editjDo': {
+        var ej = calJ(ui.modal.n), nd = ($('ejD') || {}).value, casc = !!($('ejC') || {}).checked;
+        if (!ej || !okISO(nd)){ var er1 = $('merr'); if (er1) er1.textContent = 'Elige una fecha válida.'; break; }
+        var dl = diffDays(ej.d, nd); ui.modal = null;
+        if (!dl){ render(); break; }
+        shiftFrom(ej.n, dl, casc); toast('Fecha cambiada ✓'); break;
+      }
+      case 'post': ui.modal = {type:'post', n:b.getAttribute('data-v')}; render(); break;
+      case 'postDo': { var pn0 = ui.modal.n; ui.modal = null; shiftFrom(pn0, 7, true); toast('Jornada aplazada una semana ✓'); break; }
+      case 'schedUndo': schedUndo(); break;
+      case 'editm': ui.modal = {type:'editm', n:b.getAttribute('data-v'), k:parseInt(b.getAttribute('data-k'), 10)}; render(); break;
+      case 'editmDo': case 'editmReset': {
+        var em = ui.modal, eJ = calJ(em.n), eid = 'j' + em.n + '-' + (em.k + 1), hm = ($('emT') || {}).value, dd = ($('emD') || {}).value;
+        if (a === 'editmReset'){ hm = ''; dd = ''; }
+        else if (!okHM(hm)){ var er2 = $('merr'); if (er2) er2.textContent = 'Elige una hora válida.'; break; }
+        if (eJ && dd === eJ.d) dd = '';
+        ui.modal = null; setMatchTime(eid, hm, dd); toast('Partido actualizado ✓'); break;
+      }
       case 'playMatch': {
         var pj = parseInt(b.getAttribute('data-v'), 10), pk = parseInt(b.getAttribute('data-k'), 10);
         if (S.phase !== 'home' && S.phase !== 'done'){ ui.modal = {type:'playAsk', j:pj, k:pk}; render(); }
