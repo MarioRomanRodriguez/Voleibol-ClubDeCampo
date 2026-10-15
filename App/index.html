@@ -169,6 +169,11 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
 .btn.upd{background:var(--a);color:#fff;font-size:1.05rem;padding:16px 12px;margin:6px 0 14px;box-shadow:0 3px 0 rgba(0,0,0,.18);letter-spacing:.2px}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.upd{color:#04202e}}
 :root[data-theme="dark"] .btn.upd{color:#04202e}
+.savebox{border:2px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.savebox.ok{border-color:#2e9e5b;background:rgba(46,158,91,.12)}
+.savebox.wait{border-color:var(--b);background:var(--b-soft)}
+.savebox p{margin:6px 0 10px;font-size:.88rem;color:var(--muted)}
+.savebox .btn{margin-top:10px}
 .lnk{border:0;background:none;color:var(--a);font:inherit;font-weight:700;cursor:pointer;padding:0 0 0 6px}
 </style>
 </head>
@@ -226,6 +231,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function saveG(){ try { localStorage.setItem(GKEY, JSON.stringify(G)); } catch(e){} }
   S = load() || fresh();
   G = loadG();
+  // Recupera un partido terminado que quedó en 'inicio' por un fallo de la versión anterior
+  if (S.phase === 'home' && S.matchId && S.winner != null && S.setScores && S.setScores.length) S.phase = 'done';
 
   /* ---------- utilidades ---------- */
   function $(id){ return document.getElementById(id); }
@@ -314,7 +321,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       var r = resultObj();
       if (i > -1) G.results[i] = r; else G.results.push(r);
       saveG(); shareCurrent(r);
-    } else if (i > -1){
+    } else if (i > -1 && (S.phase === 'play' || S.phase === 'setend')){   // solo si se resta un punto del último set y el partido deja de estar terminado
       G.results.splice(i, 1); saveG(); dropShared(S.matchId);
     }
   }
@@ -344,7 +351,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   }
   function enqueue(item){
     G.queue = G.queue.filter(function(x){ return x.id !== item.id; });
-    G.queue.push(item); saveG(); flush();
+    G.queue.push(item); saveG(); updateSaveBox(); flush();
   }
   function uploadResult(r, withActa){
     var sig = JSON.stringify(r) + '|' + (withActa ? S.events.length + '|' + (S.notes || '').length : '');
@@ -384,6 +391,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     } catch(e){ G.lastErr = 'sin conexión con el servidor'; }
     flushing = false; saveG();
     if (sent && !G.queue.length) toast('Resultado y acta guardados en el historial ✓', 4500);
+    updateSaveBox();
     if (!G.queue.length) pull(); else softRender();
   }
   function pull(manual){
@@ -414,7 +422,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
         if (hadData && JSON.stringify(rem) !== before) toast('Clasificación actualizada ✓');
       }
     } catch(e){ G.syncErr = true; }
-    softRender();
+    updateSaveBox(); softRender();
     return ok;
   }
   function softRender(){
@@ -963,16 +971,37 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     });
     return h + '</table>';
   }
+  function matchSaved(){ return !syncBase() || (!G.queue.some(function(q){ return q.id === S.matchId; }) && !!G.okAt[S.matchId]); }
+  function saveBoxHTML(){
+    if (matchSaved()) return '<div class="savebox ok"><b>✓ Resultado y acta guardados en el historial</b><button class="btn" data-a="accept">Aceptar</button></div>';
+    var h = '<div class="savebox wait"><b>Guardando resultado y acta…</b><p>No cierres ni vuelvas atrás hasta que aparezca «Aceptar».</p>';
+    if (G.lastErr) h += '<p style="color:var(--red)">No se pudo guardar: ' + esc(G.lastErr) + '.</p><button class="btn" data-a="retrySave">Reintentar</button><button class="btn sec" data-a="leaveUnsaved">Salir y subirlo más tarde</button>';
+    else h += '<button class="btn" disabled>Aceptar</button>';
+    return h + '</div>';
+  }
+  function updateSaveBox(){
+    if (S.phase !== 'done') return;
+    var el = $('savebox'); if (!el) return;
+    el.innerHTML = saveBoxHTML();
+    var ok = matchSaved();
+    document.querySelectorAll('[data-lock]').forEach(function(x){ x.disabled = !ok; });
+  }
+  function leaveDone(){
+    var nj = parseInt(S.info.cat, 10), sched = S.sched;
+    newMatch(); hist = []; S.phase = 'home'; ui.error = ''; ui.luSel = null;
+    ui.view = sched ? 'matches' : null; ui.jor = (sched && !isNaN(nj)) ? nj : null;
+    commit(); window.scrollTo(0, 0);
+  }
   function viewDone(){
+    var lk = matchSaved() ? '' : ' disabled';
     return '<div class="homehead" style="margin-bottom:6px"><img class="logo" style="width:70px;height:70px" src="' + LOGO + '" alt=""><h1>Fin del partido</h1><p class="sub">Gana ' + esc(S.names[S.winner]) + '</p></div>' +
-      '<div class="card"><div class="big">' + S.setsWon[0] + ' – ' + S.setsWon[1] + '</div>' + setsTable() + '<p class="hint">El resultado ya está sumado a la clasificación de este móvil.</p></div>' +
+      '<div id="savebox">' + saveBoxHTML() + '</div>' +
+      '<div class="card"><div class="big">' + S.setsWon[0] + ' – ' + S.setsWon[1] + '</div>' + setsTable() + '</div>' +
       '<div class="card"><h2>Observaciones</h2><textarea data-note="1" placeholder="Incidencias, reclamaciones, comentarios del árbitro...">' + esc(S.notes) + '</textarea></div>' +
-      '<button class="btn" data-a="history">Ver el acta en el historial</button>' +
       '<button class="btn sec" data-a="pdf">Descargar PDF ahora</button>' +
-      '<p class="hint" style="margin:6px 2px 10px">' + (!syncBase() ? '' : (G.queue.length ? 'Resultado pendiente de subir a la clasificación común' + (G.pin ? ' (se enviará cuando haya conexión).' : ': falta la clave de árbitro en Inicio.') : 'Resultado y acta guardados en el historial de actas y en la clasificación común.')) + '</p>' +
-      '<button class="btn sec" data-a="standings">Ver clasificación</button>' +
-      '<button class="btn sec" data-a="fixlast">Corregir: restar el último punto</button>' +
-      '<button class="btn sec" data-a="toHome">Volver al inicio</button>';
+      '<button class="btn sec" data-lock="1" data-a="history"' + lk + '>Ver el acta en el historial</button>' +
+      '<button class="btn sec" data-lock="1" data-a="standings"' + lk + '>Ver clasificación</button>' +
+      '<button class="btn sec" data-lock="1" data-a="fixlast"' + lk + '>Corregir: restar el último punto</button>';
   }
 
   /* ---------- modales ---------- */
@@ -1471,7 +1500,14 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     var a = b.getAttribute('data-a'), t = parseInt(b.getAttribute('data-t'), 10), i = parseInt(b.getAttribute('data-i'), 10);
     switch (a){
       case 'newMatch': newMatch(); ui.error = ''; ui.view = null; commit(); window.scrollTo(0, 0); break;
-      case 'toHome': syncSetup(); S.phase = 'home'; ui.error = ''; commit(); window.scrollTo(0, 0); break;
+      case 'accept': {
+        clearTimeout(window.__noteT); syncResult();
+        if (!matchSaved()){ updateSaveBox(); flush(); toast('Todavía guardando…'); break; }
+        leaveDone(); break;
+      }
+      case 'retrySave': G.lastErr = ''; updateSaveBox(); flush(); break;
+      case 'leaveUnsaved': leaveDone(); toast('El resultado se subirá cuando haya conexión', 5000); break;
+      case 'toHome': syncSetup(); if (S.phase === 'done'){ newMatch(); hist = []; } S.phase = 'home'; ui.error = ''; commit(); window.scrollTo(0, 0); break;
       case 'matches': ui.view = 'matches'; ui.jor = null; render(); window.scrollTo(0, 0); pull(); break;
       case 'history': ui.view = 'history'; render(); window.scrollTo(0, 0); pull(); break;
       case 'jor': { var jv = b.getAttribute('data-v'); ui.jor = jv === 'R' ? 'R' : parseInt(jv, 10); render(); window.scrollTo(0, 0); break; }
@@ -1639,6 +1675,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
 
   if (window.__test) window.__test(function(){ return S; }, buildPDF);
   render();
+  if (S.phase === 'done' && S.matchId) syncResult();   // asegura que un partido terminado esté en la clasificación y subido
   pull(); flush();
   window.addEventListener('online', function(){ flush(); pull(); });
   document.addEventListener('visibilitychange', function(){ if (!document.hidden){ flush(); pull(); } });
