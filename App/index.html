@@ -151,7 +151,7 @@ textarea{min-height:90px;resize:vertical}
 .homehead{text-align:center;margin:8px 0 14px}
 .homehead h1{margin:6px 0 2px}.homehead .sub{margin:0}
 .card.tight{padding:8px}
-.stand{font-size:.9rem}.stand th,.stand td{padding:7px 3px}
+.stand{font-size:.84rem}.stand th,.stand td{padding:7px 2px}.stand td.tt{font-size:.74rem;color:var(--muted);white-space:nowrap}.stand td,.stand th{white-space:nowrap}.stand td.tn2{white-space:normal}
 .stand th:nth-child(2),.stand td.tn2{text-align:left}
 .stand td.tn2{font-weight:600}.stand td.pts{font-weight:900}
 .stand tr.pod.p1{--pc:rgba(240,185,11,.26);--pa:#e5ac00}
@@ -160,6 +160,11 @@ textarea{min-height:90px;resize:vertical}
 .stand tr.pod{background:linear-gradient(90deg,var(--pc),transparent 88%)}
 .stand tr.pod td:first-child{box-shadow:inset 4px 0 0 var(--pa)}
 .stand tr.pod td.tn2{font-weight:800}
+.tl{width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:8px;flex:none}
+.tlph{display:inline-block}
+.stand .tl{width:24px;height:24px;margin-right:7px}
+.res b .tl{width:20px;height:20px;margin-right:5px;margin-top:-2px}
+.tname .tl,.thd .tl{width:26px;height:26px;margin-right:6px;margin-top:-3px}
 .stand tr.pod td:first-child{font-weight:900;color:var(--pa);padding-left:10px}
 .medal{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-weight:900;font-size:.85rem;border:1.5px solid rgba(0,0,0,.18);box-shadow:0 1px 3px rgba(0,0,0,.35),inset 0 1px 1px rgba(255,255,255,.75)}
 .medal.m1{background:radial-gradient(circle at 30% 25%,#fff7b8,#f5c518 55%,#c48a05);color:#3b2a00}
@@ -218,7 +223,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   // Dirección del servidor compartido (ver el archivo LEEME-SERVIDOR). Si la dejas vacía, cada móvil puede pegarla en Inicio.
   var SYNC_URL = 'https://script.google.com/macros/s/AKfycbwVZDC1yFQvhF6p0iUA4bZJ1L5n8LHUAxnz8ef4kljieAgmhbc2ip0-SXtAmI2yzKnCsA/exec';
   var CALENDAR = [{"n": 1, "d": "2026-10-18", "m": [["16:00", "Achicharraraitos", "Kaoticos"], ["16:00", "Yusihayas", "Los Cheques"], ["16:00", "Los Tiesos", "Clan Voley"], ["17:30", "Tequila", "Racatá"], ["17:30", "Elásticos 2.0", "Los Chulos"]]}, {"n": 2, "d": "2026-11-08", "m": [["16:00", "Racatá", "Yusihayas"], ["16:00", "Los Chulos", "Los Tiesos"], ["16:00", "Elásticos 2.0", "Tequila"], ["17:30", "Los Cheques", "Achicharraraitos"], ["17:30", "Clan Voley", "Kaoticos"]]}, {"n": 3, "d": "2026-11-15", "m": [["16:00", "Achicharraraitos", "Clan Voley"], ["16:00", "Los Cheques", "Racatá"], ["16:00", "Kaoticos", "Los Chulos"], ["17:30", "Yusihayas", "Elásticos 2.0"], ["17:30", "Los Tiesos", "Tequila"]]}, {"n": 4, "d": "2026-11-22", "m": [["16:00", "Elásticos 2.0", "Los Cheques"], ["16:00", "Tequila", "Kaoticos"], ["16:00", "Los Tiesos", "Yusihayas"], ["17:30", "Racatá", "Achicharraraitos"], ["17:30", "Los Chulos", "Clan Voley"]]}, {"n": 5, "d": "2026-11-29", "m": [["16:00", "Achicharraraitos", "Los Chulos"], ["16:00", "Racatá", "Elásticos 2.0"], ["16:00", "Clan Voley", "Tequila"], ["17:30", "Los Cheques", "Los Tiesos"], ["17:30", "Kaoticos", "Yusihayas"]]}, {"n": 6, "d": "2026-12-13", "m": [["16:00", "Elásticos 2.0", "Achicharraraitos"], ["16:00", "Los Tiesos", "Racatá"], ["16:00", "Kaoticos", "Los Cheques"], ["17:30", "Tequila", "Los Chulos"], ["17:30", "Yusihayas", "Clan Voley"]]}, {"n": 7, "d": "2027-01-10", "m": [["16:00", "Achicharraraitos", "Tequila"], ["16:00", "Los Chulos", "Yusihayas"], ["16:00", "Clan Voley", "Los Cheques"], ["17:30", "Elásticos 2.0", "Los Tiesos"], ["17:30", "Racatá", "Kaoticos"]]}, {"n": 8, "d": "2027-01-17", "m": [["16:00", "Yusihayas", "Tequila"], ["16:00", "Kaoticos", "Elásticos 2.0"], ["16:00", "Clan Voley", "Racatá"], ["17:30", "Los Tiesos", "Achicharraraitos"], ["17:30", "Los Cheques", "Los Chulos"]]}, {"n": 9, "d": "2027-01-31", "m": [["16:00", "Achicharraraitos", "Yusihayas"], ["16:00", "Los Tiesos", "Kaoticos"], ["16:00", "Los Chulos", "Racatá"], ["17:30", "Tequila", "Los Cheques"], ["17:30", "Elásticos 2.0", "Clan Voley"]]}, {"n": "R", "d": "2027-02-07", "m": []}];
-  var APP_VERSION = 'v11';
+  var APP_VERSION = 'v14';
   var CAL0 = JSON.parse(JSON.stringify(CALENDAR));
   var MAX_SUBS = 8;   // máximo de sustituciones por equipo y set
   var ROMAN = ['I','II','III','IV','V','VI'];
@@ -555,8 +560,13 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       else l.pts += 1;                             // perdedor +1
     });
     var rows = Object.keys(T).map(function(k){ return T[k]; });
+    function rq(a, b){ return b === 0 ? (a > 0 ? Infinity : 0) : a / b; }     // cociente a favor / en contra
     rows.sort(function(x, y){
-      return (y.pts - x.pts) || (y.g - x.g) || ((y.sf - y.sc) - (x.sf - x.sc)) || ((y.pf - y.pc) - (x.pf - x.pc)) || x.name.localeCompare(y.name);
+      if (y.pts !== x.pts) return y.pts - x.pts;
+      if (y.g !== x.g) return y.g - x.g;
+      var sx = rq(x.sf, x.sc), sy = rq(y.sf, y.sc); if (sx !== sy) return sy > sx ? 1 : -1;
+      var px = rq(x.pf, x.pc), py = rq(y.pf, y.pc); if (px !== py) return py > px ? 1 : -1;
+      return x.name.localeCompare(y.name);
     });
     return rows;
   }
@@ -789,9 +799,9 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   /* ---------- vistas ---------- */
   function standTableHTML(){
     var rows = standings();
-    var h = '<div class="card tight"><table class="stand"><tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>P</th><th>Sets</th><th>Pts</th></tr>';
+    var h = '<div class="card tight"><table class="stand"><tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>P</th><th>Sets</th><th>Tantos</th><th>Pts</th></tr>';
     rows.forEach(function(r, i){
-      h += '<tr' + podCls(r, i) + '><td>' + medal(r, i) + '</td><td class="tn2">' + esc(r.name) + '</td><td>' + r.pj + '</td><td>' + r.g + '</td><td>' + r.p + '</td><td>' + r.sf + '-' + r.sc + '</td><td class="pts">' + r.pts + '</td></tr>';
+      h += '<tr' + podCls(r, i) + '><td>' + medal(r, i) + '</td><td class="tn2">' + tl(r.name, true) + esc(r.name) + '</td><td>' + r.pj + '</td><td>' + r.g + '</td><td>' + r.p + '</td><td>' + r.sf + ':' + r.sc + '</td><td class="tt">' + r.pf + ':' + r.pc + '</td><td class="pts">' + r.pts + '</td></tr>';
     });
     return h + '</table></div>';
   }
@@ -903,6 +913,8 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   }
 
   /* ---------- clasificación: podio ---------- */
+  var LOGOS = {'los-cheques':1, 'racata':1, 'kaoticos':1, 'elasticos-2-0':1, 'yusihayas':1};
+  function tl(name, ph){ var k = slug(name); return LOGOS[k] ? '<img class="tl" src="logos/' + k + '.png" alt="" width="28" height="28">' : (ph ? '<span class="tl tlph"></span>' : ''); }
   function podCls(r, i){ return (i < 3 && r.pj > 0) ? ' class="pod p' + (i + 1) + '"' : ''; }
   function medal(r, i){ return String(i + 1); }
 
@@ -912,7 +924,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     var A = same ? r.a : r.b, B = same ? r.b : r.a;
     var cur = r.cur ? (same ? r.cur[0] + '-' + r.cur[1] : r.cur[1] + '-' + r.cur[0]) : '';
     var sets = r.sets.map(function(q){ return same ? q[0] + '-' + q[1] : q[1] + '-' + q[0]; }).join(', ');
-    return '<b>' + esc(A) + ' ' + x + ' - ' + y + ' ' + esc(B) + '</b><small class="susptxt">Suspendido' + (sets ? ' · ' + esc(sets) : '') + (cur ? ' · set ' + (r.sets.length + 1) + ' en ' + esc(cur) : (r.sets.length ? ' · entre sets' : '')) + '</small>';
+    return '<b>' + tl(A) + esc(A) + ' ' + x + ' - ' + y + ' ' + tl(B) + esc(B) + '</b><small class="susptxt">Suspendido' + (sets ? ' · ' + esc(sets) : '') + (cur ? ' · set ' + (r.sets.length + 1) + ' en ' + esc(cur) : (r.sets.length ? ' · entre sets' : '')) + '</small>';
   }
   function suspResult(){
     var r = {id:S.matchId, d:S.dateISO || new Date().toISOString().slice(0, 10), a:S.names[0], b:S.names[1],
@@ -1075,10 +1087,10 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
             (G.ref ? '<button class="go" data-a="resume" data-id="' + esc(r.id) + '">Continuar</button>' : '') + (G.admin ? '<button data-a="delres" data-id="' + esc(r.id) + '">Borrar</button>' : '') + '</span>';
         } else if (r){
           var sc = scoreOf(r), same = r.a === m[1];
-          mid = '<b>' + esc(m[1]) + ' ' + (same ? sc[0] : sc[1]) + ' - ' + (same ? sc[1] : sc[0]) + ' ' + esc(m[2]) + '</b><small>' + (r.np ? 'No presentado · ' : '') + esc(r.sets.map(function(x){ return same ? x[0] + '-' + x[1] : x[1] + '-' + x[0]; }).join(', ')) + '</small>';
+          mid = '<b>' + tl(m[1]) + esc(m[1]) + ' ' + (same ? sc[0] : sc[1]) + ' - ' + (same ? sc[1] : sc[0]) + ' ' + tl(m[2]) + esc(m[2]) + '</b><small>' + (r.np ? 'No presentado · ' : '') + esc(r.sets.map(function(x){ return same ? x[0] + '-' + x[1] : x[1] + '-' + x[0]; }).join(', ')) + '</small>';
           btn = hasActa(r.id) ? '<button data-a="actapdf" data-id="' + esc(r.id) + '">Acta PDF</button>' : '';
         } else {
-          mid = '<b>' + esc(m[1]) + ' vs ' + esc(m[2]) + '</b><small>' + (live ? 'En curso en este móvil' : 'Pendiente') + '</small>';
+          mid = '<b>' + tl(m[1]) + esc(m[1]) + ' vs ' + tl(m[2]) + esc(m[2]) + '</b><small>' + (live ? 'En curso en este móvil' : 'Pendiente') + '</small>';
           if (G.admin && !live) mid += '<span class="spb"><button data-a="editm" data-v="' + J.n + '" data-k="' + k + '">Cambiar hora o día</button></span>';
           btn = live ? '<button class="go" data-a="closeView">Continuar</button>' : '<button class="go" data-a="playMatch" data-v="' + J.n + '" data-k="' + k + '">Arbitrar</button>';
         }
@@ -1103,7 +1115,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
           return;
         }
         var sc = scoreOf(r);
-        h += '<li><span class="m"><b>' + esc(r.a) + ' ' + sc[0] + ' - ' + sc[1] + ' ' + esc(r.b) + '</b><small>' + (r.np ? 'No presentado: ' + esc(r.np === 'a' ? r.a : r.b) + ' · ' : '') + esc(r.sets.map(function(x){ return x[0] + '-' + x[1]; }).join(', ')) + (r.d ? ' · ' + fmtDate(r.d) : '') + '</small></span>' +
+        h += '<li><span class="m"><b>' + tl(r.a) + esc(r.a) + ' ' + sc[0] + ' - ' + sc[1] + ' ' + tl(r.b) + esc(r.b) + '</b><small>' + (r.np ? 'No presentado: ' + esc(r.np === 'a' ? r.a : r.b) + ' · ' : '') + esc(r.sets.map(function(x){ return x[0] + '-' + x[1]; }).join(', ')) + (r.d ? ' · ' + fmtDate(r.d) : '') + '</small></span>' +
           (hasActa(r.id) ? '<button class="go" data-a="actapdf" data-id="' + esc(r.id) + '">Acta PDF</button>' : '') + '</li>';
       });
       h += '</ul></div>';
@@ -1114,18 +1126,18 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function viewStandings(){
     var rows = standings();
     var h = '<h1>Clasificación</h1><p class="sub">Liga 2026-2027 · ' + playedResults().length + (playedResults().length === 1 ? ' partido jugado' : ' partidos jugados') + '</p>' +
-      '<div class="card tight"><table class="stand"><tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>P</th><th>Sets</th><th>Pts</th></tr>';
+      '<div class="card tight"><table class="stand"><tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>P</th><th>Sets</th><th>Tantos</th><th>Pts</th></tr>';
     rows.forEach(function(r, i){
-      h += '<tr' + podCls(r, i) + '><td>' + medal(r, i) + '</td><td class="tn2">' + esc(r.name) + '</td><td>' + r.pj + '</td><td>' + r.g + '</td><td>' + r.p + '</td><td>' + r.sf + '-' + r.sc + '</td><td class="pts">' + r.pts + '</td></tr>';
+      h += '<tr' + podCls(r, i) + '><td>' + medal(r, i) + '</td><td class="tn2">' + tl(r.name, true) + esc(r.name) + '</td><td>' + r.pj + '</td><td>' + r.g + '</td><td>' + r.p + '</td><td>' + r.sf + ':' + r.sc + '</td><td class="tt">' + r.pf + ':' + r.pc + '</td><td class="pts">' + r.pts + '</td></tr>';
     });
-    h += '</table><p class="hint">Ganador: +2 puntos. Perdedor: +1. No presentado: −1 (el rival gana +2). Desempate: victorias, diferencia de sets y de puntos.</p></div>';
+    h += '</table><p class="hint">Ganador: +2 puntos. Perdedor: +1. No presentado: −1 (el rival gana +2). Desempate: victorias, cociente de sets (a favor : en contra) y cociente de tantos.</p></div>';
     h += '<div class="card"><h2>Partidos</h2>';
     if (!playedResults().length) h += '<p class="hint" style="margin:0">Todavía no hay partidos terminados.</p>';
     else {
       h += '<ul class="res">';
       playedResults().slice().reverse().forEach(function(r){
         var sa = 0, sb = 0; r.sets.forEach(function(s){ if (s[0] > s[1]) sa++; else sb++; });
-        h += '<li><span class="m"><b>' + esc(r.a) + ' ' + sa + ' - ' + sb + ' ' + esc(r.b) + '</b><small>' + (r.np ? 'No presentado: ' + esc(r.np === 'a' ? r.a : r.b) + ' · ' : '') + esc(r.sets.map(function(s){ return s[0] + '-' + s[1]; }).join(', ')) +
+        h += '<li><span class="m"><b>' + tl(r.a) + esc(r.a) + ' ' + sa + ' - ' + sb + ' ' + tl(r.b) + esc(r.b) + '</b><small>' + (r.np ? 'No presentado: ' + esc(r.np === 'a' ? r.a : r.b) + ' · ' : '') + esc(r.sets.map(function(s){ return s[0] + '-' + s[1]; }).join(', ')) +
           (r.d ? ' · ' + fmtDate(r.d) : '') + (r.jor ? ' · Jornada ' + esc(r.jor) : '') + '</small></span>' +
           (hasActa(r.id) ? '<button data-a="actapdf" data-id="' + esc(r.id) + '">PDF</button>' : '') + (G.ref ? '<button data-a="delres" data-id="' + esc(r.id) + '" aria-label="Borrar partido">Borrar</button>' : '') + '</li>';
       });
@@ -1173,7 +1185,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
   function viewRoster(){
     var h = '<h1>Jugadores</h1><p class="sub">Escribe el número de camiseta de quien juega hoy. Sin número, no juega. Los números se recuerdan para el próximo partido.</p>';
     for (var t = 0; t < 2; t++){
-      h += '<div class="card tc t' + t + '"><div class="thd">' + esc(S.names[t]) + '</div><p class="legend2">C = capitán (obligatorio) · L = líbero (máximo 2)</p>' + capStatus(t);
+      h += '<div class="card tc t' + t + '"><div class="thd">' + tl(S.names[t]) + esc(S.names[t]) + '</div><p class="legend2">C = capitán (obligatorio) · L = líbero (máximo 2)</p>' + capStatus(t);
       S.draft[t].forEach(function(p, i){
         h += '<div class="rrow">' +
           '<input class="txt rn" data-r="n" data-t="' + t + '" data-i="' + i + '" inputmode="numeric" maxlength="2" value="' + esc(p.n) + '" placeholder="Nº" aria-label="Número de ' + esc(p.name || 'jugador') + '">' +
@@ -1231,7 +1243,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
       '<label class="f">Campo</label><button class="btn sec" data-a="side">Izquierda: ' + esc(S.names[o[0]]) + ' (tocar para intercambiar)</button></div>';
     h += '<div class="row2">';
     o.forEach(function(t){
-      h += '<div class="card lu tc t' + t + '"><div class="thd">' + esc(S.names[t]) + '</div>' +
+      h += '<div class="card lu tc t' + t + '"><div class="thd">' + tl(S.names[t]) + esc(S.names[t]) + '</div>' +
         '<div class="court"><div class="net"></div><div class="grid">' + FRONT.map(function(i){ return lineupCellHTML(t, i); }).join('') + '</div></div>' +
         '<div class="grid" style="margin-bottom:4px">' + BACK.map(function(i){ return lineupCellHTML(t, i); }).join('') + '</div>' +
         '<button class="btn sec" data-a="luclear" data-t="' + t + '">Limpiar alineación de ' + esc(S.names[t]) + '</button></div>';
@@ -1283,7 +1295,7 @@ h3.grp{margin:16px 4px 8px;font-size:1rem}
     h += '<div class="teams">';
     o.forEach(function(t){
       h += '<section class="team t' + t + (S.serving === t && live ? ' serving' : '') + '">' +
-        '<div class="tname">' + esc(S.names[t]) + '</div>' +
+        '<div class="tname">' + tl(S.names[t]) + esc(S.names[t]) + '</div>' +
         '<div class="tscore" aria-live="polite">' + S.score[t] + '</div>' + courtHTML(t, live) +
         '<div class="ptrow"><button class="btn pt" data-a="pt" data-t="' + t + '"' + (live ? '' : ' disabled') + '>+1 punto</button>' +
         '<button class="btn sec minus" data-a="minus" data-t="' + t + '"' + (live && S.score[t] > 0 ? '' : ' disabled') + ' aria-label="Restar un punto a ' + esc(S.names[t]) + '">−1</button></div>' +

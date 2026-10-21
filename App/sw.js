@@ -1,6 +1,6 @@
 // Cambia el número de versión cada vez que subas una actualización de la app.
-var CACHE = 'acta-voley-v11';
-var SHELL = ['./', 'index.html', 'manifest.webmanifest', 'jspdf.umd.min.js', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
+var CACHE = 'acta-voley-v14';
+var SHELL = ['./', 'index.html', 'manifest.webmanifest', 'jspdf.umd.min.js', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'logos/los-cheques.png', 'logos/racata.png', 'logos/kaoticos.png', 'logos/elasticos-2-0.png', 'logos/yusihayas.png'];
 
 self.addEventListener('install', function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(SHELL); }).then(function(){ return self.skipWaiting(); }));
